@@ -1,0 +1,922 @@
+[
+  {
+    "id": 1,
+    "name": "AirBass Pro 360",
+    "category": "earbuds",
+    "price": 2999,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Premium wireless earbuds with 360° spatial audio and active noise cancellation",
+    "features": [
+      "Active Noise Cancellation",
+      "40 Hour Playback",
+      "IPX7 Water Resistant",
+      "Touch Controls",
+      "Fast Charging"
+    ],
+    "specs": {
+      "Battery": "40 hours with case",
+      "Driver": "10mm dynamic driver",
+      "Bluetooth": "5.3",
+      "Charging": "USB-C fast charging",
+      "Weight": "4.5g per earbud"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Rockerz Elite X",
+    "category": "headphones",
+    "price": 4999,
+    "rating": 4.7,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Over-ear wireless headphones with premium sound quality and comfort",
+    "features": [
+      "Hybrid ANC",
+      "60 Hour Battery",
+      "Dual Connectivity",
+      "Premium Comfort Cushions",
+      "Foldable Design"
+    ],
+    "specs": {
+      "Battery": "60 hours",
+      "Driver": "40mm dynamic drivers",
+      "Bluetooth": "5.3",
+      "ANC": "Hybrid Active Noise Cancellation",
+      "Weight": "285g"
+    }
+  },
+  {
+    "id": 3,
+    "name": "SoundBlast 500",
+    "category": "speakers",
+    "price": 3499,
+    "rating": 4.4,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Portable Bluetooth speaker with powerful bass and 360° sound",
+    "features": [
+      "360° Sound",
+      "20 Hour Battery",
+      "IPX7 Waterproof",
+      "Party Mode",
+      "Built-in Powerbank"
+    ],
+    "specs": {
+      "Battery": "20 hours",
+      "Output": "30W RMS",
+      "Bluetooth": "5.3",
+      "Range": "30 meters",
+      "Weight": "850g"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Aavante Bar 3000",
+    "category": "soundbars",
+    "price": 14999,
+    "rating": 4.6,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Premium soundbar with wireless subwoofer and Dolby Atmos",
+    "features": [
+      "Dolby Atmos",
+      "Wireless Subwoofer",
+      "HDMI ARC",
+      "Multi-Room Audio",
+      "Voice Assistant Compatible"
+    ],
+    "specs": {
+      "Power": "300W total",
+      "Channels": "2.1 Channel",
+      "Connectivity": "HDMI ARC, Optical, Bluetooth",
+      "Subwoofer": "Wireless 8-inch",
+      "Dimensions": "900mm x 60mm x 120mm"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Storm Pro Smartwatch",
+    "category": "smartwatches",
+    "price": 5999,
+    "rating": 4.3,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Advanced smartwatch with health tracking and GPS",
+    "features": [
+      "Built-in GPS",
+      "Heart Rate Monitor",
+      "Blood Oxygen Monitor",
+      "100+ Sports Modes",
+      "7 Day Battery"
+    ],
+    "specs": {
+      "Display": "1.43-inch AMOLED",
+      "Battery": "7 days typical use",
+      "Water Resistance": "5 ATM",
+      "Sensors": "Heart rate, SpO2, Accelerometer",
+      "Compatibility": "iOS & Android"
+    }
+  },
+  {
+    "id": 6,
+    "name": "TurboCharge 65W",
+    "category": "accessories",
+    "price": 1499,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Ultra-fast 65W GaN charger with dual USB-C ports",
+    "features": [
+      "65W Fast Charging",
+      "GaN Technology",
+      "Dual USB-C Ports",
+      "Universal Compatibility",
+      "Compact Design"
+    ],
+    "specs": {
+      "Output": "65W max",
+      "Ports": "2x USB-C",
+      "Technology": "GaN III",
+      "Protection": "Surge, overcharge, temperature",
+      "Weight": "120g"
+    }
+  },
+  {
+    "id": 7,
+    "name": "AirBass Mini",
+    "category": "earbuds",
+    "price": 1499,
+    "rating": 4.2,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Compact wireless earbuds with powerful sound",
+    "features": [
+      "30 Hour Playback",
+      "Touch Controls",
+      "IPX5 Water Resistant",
+      "Voice Assistant",
+      "Auto Connect"
+    ],
+    "specs": {
+      "Battery": "30 hours with case",
+      "Driver": "8mm driver",
+      "Bluetooth": "5.1",
+      "Range": "10 meters",
+      "Weight": "3.8g per earbud"
+    }
+  },
+  {
+    "id": 8,
+    "name": "AirBass Sport",
+    "category": "earbuds",
+    "price": 2499,
+    "rating": 4.4,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Sports earbuds with secure fit and sweat resistance",
+    "features": [
+      "Secure Ear Hooks",
+      "IPX7 Waterproof",
+      "35 Hour Battery",
+      "Low Latency Gaming Mode",
+      "Environmental Noise Cancellation"
+    ],
+    "specs": {
+      "Battery": "35 hours total",
+      "Driver": "10mm titanium driver",
+      "Bluetooth": "5.2",
+      "Latency": "60ms gaming mode",
+      "Weight": "5g per earbud"
+    }
+  },
+  {
+    "id": 9,
+    "name": "AirBass Zen",
+    "category": "earbuds",
+    "price": 3499,
+    "rating": 4.6,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Premium ANC earbuds with exceptional sound quality",
+    "features": [
+      "Adaptive ANC",
+      "48 Hour Battery",
+      "Wireless Charging",
+      "Transparency Mode",
+      "Premium Sound Tuning"
+    ],
+    "specs": {
+      "Battery": "48 hours with case",
+      "Driver": "11mm bio-cellulose driver",
+      "Bluetooth": "5.3",
+      "ANC": "Adaptive 35dB",
+      "Charging": "USB-C + Qi wireless"
+    }
+  },
+  {
+    "id": 10,
+    "name": "AirBass Lite",
+    "category": "earbuds",
+    "price": 999,
+    "rating": 4.0,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Affordable wireless earbuds for everyday use",
+    "features": [
+      "25 Hour Playback",
+      "Lightweight Design",
+      "Clear Voice Calls",
+      "One-Touch Controls",
+      "Compact Case"
+    ],
+    "specs": {
+      "Battery": "25 hours total",
+      "Driver": "6mm driver",
+      "Bluetooth": "5.0",
+      "Range": "10 meters",
+      "Weight": "3.5g per earbud"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Rockerz Bass Pro",
+    "category": "headphones",
+    "price": 3999,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Bass-heavy over-ear headphones for music lovers",
+    "features": [
+      "Extra Bass Mode",
+      "50 Hour Battery",
+      "Soft Cushions",
+      "Foldable",
+      "Built-in Mic"
+    ],
+    "specs": {
+      "Battery": "50 hours",
+      "Driver": "40mm drivers",
+      "Bluetooth": "5.2",
+      "Weight": "260g",
+      "Cable": "3.5mm aux included"
+    }
+  },
+  {
+    "id": 12,
+    "name": "Rockerz Studio",
+    "category": "headphones",
+    "price": 6999,
+    "rating": 4.8,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Studio-grade wireless headphones with Hi-Res audio",
+    "features": [
+      "Hi-Res Audio Certified",
+      "Advanced ANC",
+      "70 Hour Battery",
+      "Premium Leather Cushions",
+      "Multi-Device Pairing"
+    ],
+    "specs": {
+      "Battery": "70 hours",
+      "Driver": "50mm planar magnetic",
+      "Bluetooth": "5.3 with LDAC",
+      "ANC": "40dB Hybrid ANC",
+      "Weight": "310g"
+    }
+  },
+  {
+    "id": 13,
+    "name": "Rockerz On-Ear",
+    "category": "headphones",
+    "price": 1999,
+    "rating": 4.3,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Compact on-ear headphones for portability",
+    "features": [
+      "Compact Design",
+      "30 Hour Battery",
+      "Soft Ear Pads",
+      "Foldable",
+      "Voice Assistant"
+    ],
+    "specs": {
+      "Battery": "30 hours",
+      "Driver": "32mm drivers",
+      "Bluetooth": "5.1",
+      "Weight": "180g",
+      "Foldable": "Yes"
+    }
+  },
+  {
+    "id": 14,
+    "name": "Rockerz Kids",
+    "category": "headphones",
+    "price": 1499,
+    "rating": 4.4,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Safe and colorful headphones designed for kids",
+    "features": [
+      "Volume Limited",
+      "Colorful Design",
+      "Comfortable Fit",
+      "20 Hour Battery",
+      "Durable Build"
+    ],
+    "specs": {
+      "Battery": "20 hours",
+      "Driver": "30mm drivers",
+      "Volume Limit": "85dB max",
+      "Weight": "150g",
+      "Age": "5-12 years"
+    }
+  },
+  {
+    "id": 15,
+    "name": "Rockerz Gaming",
+    "category": "headphones",
+    "price": 3499,
+    "rating": 4.6,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Gaming headphones with low latency and RGB",
+    "features": [
+      "40ms Low Latency",
+      "RGB Lighting",
+      "50mm Drivers",
+      "Detachable Mic",
+      "45 Hour Battery"
+    ],
+    "specs": {
+      "Battery": "45 hours",
+      "Driver": "50mm neodymium",
+      "Latency": "40ms",
+      "Mic": "Detachable boom mic",
+      "RGB": "Customizable"
+    }
+  },
+  {
+    "id": 16,
+    "name": "SoundBlast Mini",
+    "category": "speakers",
+    "price": 1999,
+    "rating": 4.2,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Compact portable speaker with big sound",
+    "features": [
+      "Portable Design",
+      "12 Hour Battery",
+      "IPX6 Waterproof",
+      "TWS Pairing",
+      "Built-in Mic"
+    ],
+    "specs": {
+      "Battery": "12 hours",
+      "Output": "10W",
+      "Bluetooth": "5.0",
+      "Range": "20 meters",
+      "Weight": "350g"
+    }
+  },
+  {
+    "id": 17,
+    "name": "SoundBlast Party",
+    "category": "speakers",
+    "price": 5999,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "High-power party speaker with LED lights",
+    "features": [
+      "RGB LED Lights",
+      "50W Output",
+      "15 Hour Battery",
+      "Karaoke Mode",
+      "Guitar Input"
+    ],
+    "specs": {
+      "Battery": "15 hours",
+      "Output": "50W RMS",
+      "Bluetooth": "5.2",
+      "Inputs": "USB, AUX, Guitar",
+      "Weight": "2.5kg"
+    }
+  },
+  {
+    "id": 18,
+    "name": "SoundBlast Outdoor",
+    "category": "speakers",
+    "price": 4499,
+    "rating": 4.4,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Rugged outdoor speaker with extreme durability",
+    "features": [
+      "Shockproof Design",
+      "IP67 Waterproof",
+      "24 Hour Battery",
+      "Carabiner Hook",
+      "Dual Pairing"
+    ],
+    "specs": {
+      "Battery": "24 hours",
+      "Output": "20W",
+      "Protection": "IP67",
+      "Range": "30 meters",
+      "Weight": "680g"
+    }
+  },
+  {
+    "id": 19,
+    "name": "SoundBlast Home",
+    "category": "speakers",
+    "price": 2999,
+    "rating": 4.3,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Smart home speaker with voice assistant",
+    "features": [
+      "Voice Control",
+      "360° Sound",
+      "WiFi + Bluetooth",
+      "Multi-Room Audio",
+      "Touch Controls"
+    ],
+    "specs": {
+      "Output": "25W",
+      "Connectivity": "WiFi, Bluetooth 5.1",
+      "Assistant": "Alexa & Google",
+      "Drivers": "2x 10W + 1x 5W tweeter",
+      "Power": "AC powered"
+    }
+  },
+  {
+    "id": 20,
+    "name": "SoundBlast Studio",
+    "category": "speakers",
+    "price": 7999,
+    "rating": 4.7,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Premium bookshelf speakers for audiophiles",
+    "features": [
+      "Hi-Res Audio",
+      "Wooden Cabinet",
+      "Active Crossover",
+      "Multiple Inputs",
+      "Remote Control"
+    ],
+    "specs": {
+      "Output": "80W total (40W x 2)",
+      "Drivers": "5-inch woofer + 1-inch tweeter",
+      "Inputs": "Bluetooth, RCA, Optical, USB",
+      "Frequency": "45Hz - 20kHz",
+      "Dimensions": "200 x 280 x 250mm each"
+    }
+  },
+  {
+    "id": 21,
+    "name": "Aavante Bar 1500",
+    "category": "soundbars",
+    "price": 7999,
+    "rating": 4.3,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Compact soundbar perfect for small rooms",
+    "features": [
+      "Virtual Surround",
+      "Wireless Subwoofer",
+      "HDMI ARC",
+      "Bluetooth Streaming",
+      "Wall Mountable"
+    ],
+    "specs": {
+      "Power": "120W total",
+      "Channels": "2.1 Channel",
+      "Connectivity": "HDMI ARC, Optical, Bluetooth",
+      "Subwoofer": "Wireless 6.5-inch",
+      "Dimensions": "650mm x 55mm x 95mm"
+    }
+  },
+  {
+    "id": 22,
+    "name": "Aavante Bar 5000",
+    "category": "soundbars",
+    "price": 24999,
+    "rating": 4.8,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Premium soundbar with rear speakers and Dolby Atmos",
+    "features": [
+      "Dolby Atmos",
+      "DTS:X",
+      "Wireless Rear Speakers",
+      "8K HDMI Pass-through",
+      "Multi-Room Audio"
+    ],
+    "specs": {
+      "Power": "500W total",
+      "Channels": "5.1.2 Channel",
+      "Connectivity": "HDMI 2.1, eARC, Optical, WiFi",
+      "Subwoofer": "Wireless 10-inch",
+      "Dimensions": "1200mm x 65mm x 135mm"
+    }
+  },
+  {
+    "id": 23,
+    "name": "Aavante Bar Compact",
+    "category": "soundbars",
+    "price": 4999,
+    "rating": 4.2,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Sleek soundbar for bedroom or small TV",
+    "features": [
+      "Compact Design",
+      "Built-in Subwoofer",
+      "Bluetooth 5.0",
+      "HDMI ARC",
+      "Night Mode"
+    ],
+    "specs": {
+      "Power": "80W",
+      "Channels": "2.0 Channel",
+      "Connectivity": "HDMI ARC, Optical, Bluetooth",
+      "Subwoofer": "Built-in",
+      "Dimensions": "550mm x 60mm x 90mm"
+    }
+  },
+  {
+    "id": 24,
+    "name": "Aavante Bar Gaming",
+    "category": "soundbars",
+    "price": 12999,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Gaming-focused soundbar with low latency",
+    "features": [
+      "Low Latency Mode",
+      "RGB Lighting",
+      "HDMI 2.1",
+      "Game Mode EQ",
+      "Wireless Sub"
+    ],
+    "specs": {
+      "Power": "200W total",
+      "Channels": "2.1 Channel",
+      "Latency": "40ms",
+      "Connectivity": "HDMI 2.1, Optical, USB",
+      "Dimensions": "800mm x 70mm x 110mm"
+    }
+  },
+  {
+    "id": 25,
+    "name": "Aavante Bar Cinema",
+    "category": "soundbars",
+    "price": 18999,
+    "rating": 4.7,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Cinematic soundbar with immersive surround sound",
+    "features": [
+      "Dolby Atmos",
+      "Wireless Subwoofer",
+      "4K HDR Pass-through",
+      "Voice Enhancement",
+      "Cinema Mode"
+    ],
+    "specs": {
+      "Power": "380W total",
+      "Channels": "3.1.2 Channel",
+      "Connectivity": "HDMI 2.1, eARC, Optical",
+      "Subwoofer": "Wireless 8-inch",
+      "Dimensions": "1100mm x 62mm x 125mm"
+    }
+  },
+  {
+    "id": 26,
+    "name": "Storm Lite Smartwatch",
+    "category": "smartwatches",
+    "price": 2999,
+    "rating": 4.1,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Affordable smartwatch with fitness tracking",
+    "features": [
+      "Heart Rate Monitor",
+      "50+ Sports Modes",
+      "5 ATM Water Resistant",
+      "10 Day Battery",
+      "Sleep Tracking"
+    ],
+    "specs": {
+      "Display": "1.3-inch LCD",
+      "Battery": "10 days",
+      "Water Resistance": "5 ATM",
+      "Sensors": "Heart rate, Accelerometer",
+      "Compatibility": "iOS & Android"
+    }
+  },
+  {
+    "id": 27,
+    "name": "Storm Ultra Smartwatch",
+    "category": "smartwatches",
+    "price": 9999,
+    "rating": 4.6,
+    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "description": "Premium smartwatch with advanced health features",
+    "features": [
+      "ECG Monitor",
+      "Blood Pressure",
+      "Always-On Display",
+      "GPS + GLONASS",
+      "14 Day Battery"
+    ],
+    "specs": {
+      "Display": "1.52-inch AMOLED",
+      "Battery": "14 days",
+      "Water Resistance": "10 ATM",
+      "Sensors": "ECG, PPG, SpO2, Temp",
+      "GPS": "Dual-band GPS"
+    }
+  },
+  {
+    "id": 28,
+    "name": "Storm Sport Watch",
+    "category": "smartwatches",
+    "price": 4499,
+    "rating": 4.4,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Rugged sports watch for active lifestyles",
+    "features": [
+      "Military Grade Durability",
+      "Built-in GPS",
+      "120+ Sports Modes",
+      "Route Tracking",
+      "12 Day Battery"
+    ],
+    "specs": {
+      "Display": "1.4-inch MIP",
+      "Battery": "12 days (GPS on: 30 hours)",
+      "Durability": "MIL-STD-810G",
+      "GPS": "Built-in multi-GNSS",
+      "Weight": "58g"
+    }
+  },
+  {
+    "id": 29,
+    "name": "Storm Fashion Watch",
+    "category": "smartwatches",
+    "price": 3499,
+    "rating": 4.2,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Stylish smartwatch with interchangeable straps",
+    "features": [
+      "Elegant Design",
+      "Interchangeable Straps",
+      "Menstrual Tracking",
+      "Stress Monitor",
+      "8 Day Battery"
+    ],
+    "specs": {
+      "Display": "1.28-inch AMOLED",
+      "Battery": "8 days",
+      "Water Resistance": "3 ATM",
+      "Straps": "Multiple colors available",
+      "Weight": "32g (without strap)"
+    }
+  },
+  {
+    "id": 30,
+    "name": "Storm Kids Watch",
+    "category": "smartwatches",
+    "price": 1999,
+    "rating": 4.3,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Safe smartwatch for kids with GPS tracking",
+    "features": [
+      "GPS Location",
+      "SOS Button",
+      "Activity Tracking",
+      "Safe Zone Alerts",
+      "6 Day Battery"
+    ],
+    "specs": {
+      "Display": "1.2-inch Color LCD",
+      "Battery": "6 days",
+      "GPS": "Real-time tracking",
+      "Calling": "2-way voice calls",
+      "Age": "5-12 years"
+    }
+  },
+  {
+    "id": 31,
+    "name": "PowerMax 20000mAh",
+    "category": "accessories",
+    "price": 1999,
+    "rating": 4.4,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "High-capacity power bank with fast charging",
+    "features": [
+      "20000mAh Capacity",
+      "22.5W Fast Charging",
+      "Triple Output",
+      "LED Display",
+      "Multi-Protection"
+    ],
+    "specs": {
+      "Capacity": "20000mAh",
+      "Input": "USB-C 18W",
+      "Output": "USB-C 22.5W, 2x USB-A",
+      "Indicator": "LED percentage display",
+      "Weight": "380g"
+    }
+  },
+  {
+    "id": 32,
+    "name": "Type-C Cable Pro",
+    "category": "accessories",
+    "price": 499,
+    "rating": 4.3,
+    "images": ["/placeholder.svg"],
+    "description": "Braided USB-C to USB-C cable with 100W support",
+    "features": [
+      "100W Power Delivery",
+      "Braided Design",
+      "Data Transfer",
+      "Durable",
+      "1.2m Length"
+    ],
+    "specs": {
+      "Power": "100W (20V/5A)",
+      "Data": "USB 3.1 Gen 2 (10Gbps)",
+      "Length": "1.2 meters",
+      "Material": "Nylon braided",
+      "Connector": "USB-C to USB-C"
+    }
+  },
+  {
+    "id": 33,
+    "name": "Lightning Cable Fast",
+    "category": "accessories",
+    "price": 599,
+    "rating": 4.2,
+    "images": ["/placeholder.svg"],
+    "description": "MFi certified lightning cable with fast charging",
+    "features": [
+      "MFi Certified",
+      "Fast Charging",
+      "Reinforced Design",
+      "Data Sync",
+      "1m Length"
+    ],
+    "specs": {
+      "Certification": "Apple MFi",
+      "Power": "Up to 20W",
+      "Length": "1 meter",
+      "Material": "TPE + Nylon",
+      "Connector": "USB-C to Lightning"
+    }
+  },
+  {
+    "id": 34,
+    "name": "Wireless Charging Pad",
+    "category": "accessories",
+    "price": 1299,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Fast wireless charging pad with LED indicator",
+    "features": [
+      "15W Fast Charging",
+      "Qi Compatible",
+      "LED Indicator",
+      "Anti-Slip Surface",
+      "Multi-Protection"
+    ],
+    "specs": {
+      "Power": "15W max",
+      "Standard": "Qi Wireless",
+      "Input": "USB-C 18W",
+      "Compatibility": "All Qi devices",
+      "Dimensions": "100mm diameter"
+    }
+  },
+  {
+    "id": 35,
+    "name": "Car Charger Dual USB",
+    "category": "accessories",
+    "price": 699,
+    "rating": 4.3,
+    "images": ["/placeholder.svg"],
+    "description": "Fast dual USB car charger with smart detection",
+    "features": [
+      "Dual USB Ports",
+      "36W Total Output",
+      "Smart Chip",
+      "LED Light",
+      "Compact Design"
+    ],
+    "specs": {
+      "Output": "36W total (18W per port)",
+      "Ports": "2x USB-A",
+      "Input": "12-24V DC",
+      "Protection": "Over-current, short circuit",
+      "Size": "60mm x 25mm"
+    }
+  },
+  {
+    "id": 36,
+    "name": "Phone Stand Adjustable",
+    "category": "accessories",
+    "price": 799,
+    "rating": 4.4,
+    "images": ["/placeholder.svg"],
+    "description": "Foldable phone stand with multiple angles",
+    "features": [
+      "Adjustable Angles",
+      "Foldable Design",
+      "Non-Slip Base",
+      "Universal Fit",
+      "Aluminum Build"
+    ],
+    "specs": {
+      "Material": "Aluminum alloy",
+      "Compatibility": "4-13 inch devices",
+      "Angles": "Multiple adjustable",
+      "Weight": "180g",
+      "Folded Size": "150mm x 60mm"
+    }
+  },
+  {
+    "id": 37,
+    "name": "USB Hub 7-Port",
+    "category": "accessories",
+    "price": 1599,
+    "rating": 4.5,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "Powered USB 3.0 hub with 7 ports",
+    "features": [
+      "7 USB 3.0 Ports",
+      "LED Indicators",
+      "Individual Switches",
+      "Powered Design",
+      "5Gbps Speed"
+    ],
+    "specs": {
+      "Ports": "7x USB 3.0",
+      "Speed": "5Gbps per port",
+      "Power": "12V/3A adapter",
+      "Cable": "1m USB 3.0 cable",
+      "Dimensions": "160mm x 45mm x 20mm"
+    }
+  },
+  {
+    "id": 38,
+    "name": "Screen Protector Glass",
+    "category": "accessories",
+    "price": 399,
+    "rating": 4.2,
+    "images": ["/placeholder.svg"],
+    "description": "Tempered glass screen protector with case fit",
+    "features": [
+      "9H Hardness",
+      "Case Friendly",
+      "Easy Installation",
+      "Oleophobic Coating",
+      "HD Clear"
+    ],
+    "specs": {
+      "Material": "Tempered glass",
+      "Hardness": "9H",
+      "Thickness": "0.33mm",
+      "Transparency": "99.9%",
+      "Compatibility": "Universal sizes"
+    }
+  },
+  {
+    "id": 39,
+    "name": "Phone Case Rugged",
+    "category": "accessories",
+    "price": 899,
+    "rating": 4.4,
+    "images": ["/placeholder.svg"],
+    "description": "Military-grade rugged phone case",
+    "features": [
+      "Military Grade",
+      "Shock Absorption",
+      "Raised Bezels",
+      "Wireless Charging",
+      "Textured Grip"
+    ],
+    "specs": {
+      "Protection": "MIL-STD-810G",
+      "Material": "TPU + PC",
+      "Drop Protection": "Up to 15ft",
+      "Wireless": "Qi compatible",
+      "Models": "Various phones"
+    }
+  },
+  {
+    "id": 40,
+    "name": "Selfie Stick Tripod",
+    "category": "accessories",
+    "price": 1199,
+    "rating": 4.3,
+    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "description": "3-in-1 selfie stick with Bluetooth remote",
+    "features": [
+      "3-in-1 Design",
+      "Bluetooth Remote",
+      "Extendable to 70cm",
+      "Tripod Mode",
+      "360° Rotation"
+    ],
+    "specs": {
+      "Max Length": "70cm",
+      "Min Length": "19cm",
+      "Remote": "Bluetooth 4.0",
+      "Battery": "CR1632 (included)",
+      "Weight": "155g"
+    }
+  }
+]
