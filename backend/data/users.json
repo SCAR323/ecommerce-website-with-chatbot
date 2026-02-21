@@ -1,0 +1,16 @@
+[
+  {
+    "id": "mlpq6tym6gc8il",
+    "username": "abc",
+    "email": "abc@gmail.com",
+    "password": "$2b$10$p2IJ3QEpHUwq.ssBqulfveXDkM79CKzEfbd95dFfKDIFSX2SEiG2G",
+    "createdAt": "2026-02-16T22:08:02.351Z"
+  },
+  {
+    "id": "mlw3nxqrjpjyvq",
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "$2b$10$uKKriPbLz.AXguyA1kl9p.5z.gG5Oy9bJhL.aqp4se6Sw9errWyoC",
+    "createdAt": "2026-02-21T09:11:52.468Z"
+  }
+]

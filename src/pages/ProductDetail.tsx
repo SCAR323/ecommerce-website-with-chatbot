@@ -1,15 +1,18 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Check } from "lucide-react";
+import { Star, Check, ShoppingCart } from "lucide-react";
 import { useCompareStore } from "@/store/compareStore";
+import { useCartStore } from "@/store/cartStore";
 import { useToast } from "@/hooks/use-toast";
 import productsData from "@/data/products.json";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { addToCompare } = useCompareStore();
+  const { addToCart } = useCartStore();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const product = productsData.find((p) => p.id === Number(id));
 
@@ -70,8 +73,45 @@ const ProductDetail = () => {
           <p className="text-muted-foreground mb-6">{product.description}</p>
 
           <div className="flex gap-4 mb-8">
-            <Button size="lg" className="flex-1 bg-gradient-accent hover:opacity-90">
+            <Button
+              size="lg"
+              className="flex-1 bg-gradient-accent hover:opacity-90"
+              onClick={() => {
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images[0],
+                  category: product.category,
+                });
+                toast({
+                  title: "Added to Cart 🛒",
+                  description: `${product.name} has been added to your cart.`,
+                });
+                navigate("/cart");
+              }}
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
               Buy Now
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => {
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images[0],
+                  category: product.category,
+                });
+                toast({
+                  title: "Added to Cart 🛒",
+                  description: `${product.name} has been added to your cart.`,
+                });
+              }}
+            >
+              Add to Cart
             </Button>
             <Button
               size="lg"

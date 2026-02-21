@@ -1,0 +1,70 @@
+[
+  {
+    "orderItems": [
+      {
+        "name": "AirBass Pro 360",
+        "qty": 1,
+        "image": "/placeholder.svg",
+        "price": 2999,
+        "product": "1"
+      }
+    ],
+    "user": "mlw3nxqrjpjyvq",
+    "shippingAddress": {
+      "address": "123 Test St",
+      "city": "Test City",
+      "postalCode": "123456",
+      "country": "India"
+    },
+    "paymentMethod": "Card",
+    "itemsPrice": 2999,
+    "taxPrice": 540,
+    "shippingPrice": 99,
+    "totalPrice": 3638,
+    "id": "ORD_mlw3orowxxe",
+    "isPaid": true,
+    "isDelivered": false,
+    "createdAt": "2026-02-21T09:12:31.280Z",
+    "paidAt": "2026-02-21T09:12:31.288Z",
+    "paymentResult": {
+      "id": "SIM_123",
+      "status": "COMPLETED",
+      "update_time": "2026-02-21T09:12:31.285Z",
+      "email_address": "test@example.com"
+    }
+  },
+  {
+    "orderItems": [
+      {
+        "name": "Rockerz Elite X",
+        "qty": 2,
+        "image": "/placeholder.svg",
+        "price": 4999,
+        "product": 2
+      }
+    ],
+    "user": "mlpq6tym6gc8il",
+    "shippingAddress": {
+      "address": "Nirmala Bhawan Clement Town near ganpat shop",
+      "city": "Dehradun",
+      "postalCode": "248002",
+      "country": "India"
+    },
+    "paymentMethod": "Card",
+    "itemsPrice": 9998,
+    "taxPrice": 1800,
+    "shippingPrice": 0,
+    "totalPrice": 11798,
+    "id": "ORD_mlw5kd3h7aq",
+    "isPaid": true,
+    "isDelivered": false,
+    "createdAt": "2026-02-21T10:05:04.973Z",
+    "paidAt": "2026-02-21T10:05:04.985Z",
+    "paymentResult": {
+      "id": "SIM_1771668304976",
+      "status": "COMPLETED",
+      "update_time": "2026-02-21T10:05:04.976Z",
+      "email_address": "simulation@sonic-hub.com"
+    }
+  }
+]

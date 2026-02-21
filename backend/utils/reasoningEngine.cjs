@@ -1,6 +1,9 @@
 function reasoningEngine(intent, results) {
   if (!results || results.length === 0) {
-    return "I searched the website but couldn’t find relevant information.";
+    return {
+      text: "I searched the website but couldn’t find relevant information.",
+      products: []
+    };
   }
 
   /* ===============================
@@ -26,21 +29,32 @@ function reasoningEngine(intent, results) {
       return `• ${p.title}: costs ${price}, comes with ${warranty} warranty.`;
     });
 
-    return (
-      "Here is a detailed comparison:\n" +
-      comparisons.join("\n") +
-      "\n\nSummary:\n" +
-      `${products[0].title} is better for premium features, while ${products[1].title} is more budget-friendly.`
-    );
+    return {
+      text: "Here is a detailed comparison:\n" +
+        comparisons.join("\n") +
+        "\n\nSummary:\n" +
+        `${products[0].title} is better for premium features, while ${products[1].title} is more budget-friendly.`,
+      products: products
+    };
   }
 
   /* ===============================
-     PRICE / WARRANTY / GENERAL
+     PRICE / RECOMMENDATION / GENERAL
      =============================== */
-  return results
-    .slice(0, 2)
-    .map((r) => r.content)
-    .join(" ");
+  if (intent === "recommendation" || intent === "price") {
+    return {
+      text: results.slice(0, 3).map((r) => r.content).join("\n\n"),
+      products: results.slice(0, 3)
+    };
+  }
+
+  return {
+    text: results
+      .slice(0, 2)
+      .map((r) => r.content)
+      .join(" "),
+    products: []
+  };
 }
 
 module.exports = reasoningEngine;

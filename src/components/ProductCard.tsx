@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { useCartStore } from "@/store/cartStore";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   id: number;
@@ -12,7 +14,19 @@ interface ProductCardProps {
   category: string;
 }
 
-export const ProductCard = ({ id, name, price, rating, images }: ProductCardProps) => {
+export const ProductCard = ({ id, name, price, rating, images, category }: ProductCardProps) => {
+  const { addToCart } = useCartStore();
+  const { toast } = useToast();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart({ id, name, price, image: images[0], category });
+    toast({
+      title: "Added to Cart 🛒",
+      description: `${name} has been added to your cart.`,
+    });
+  };
+
   return (
     <Card className="group overflow-hidden hover:shadow-glow transition-smooth bg-gradient-card border-border">
       <CardHeader className="p-0">
@@ -34,13 +48,22 @@ export const ProductCard = ({ id, name, price, rating, images }: ProductCardProp
           ₹{price.toLocaleString()}
         </p>
       </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Link to={`/product/${id}`} className="w-full">
+      <CardFooter className="p-4 pt-0 flex gap-2">
+        <Link to={`/product/${id}`} className="flex-1">
           <Button className="w-full bg-gradient-primary hover:opacity-90 transition-smooth">
             View Details
           </Button>
         </Link>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleAddToCart}
+          className="flex-shrink-0 hover:bg-primary/10 hover:text-primary transition-smooth"
+        >
+          <ShoppingCart className="h-4 w-4" />
+        </Button>
       </CardFooter>
     </Card>
   );
 };
+
