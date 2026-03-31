@@ -5,7 +5,7 @@
     "category": "earbuds",
     "price": 2999,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/51+e7yrgPpL._SX522_.jpg"],
     "description": "Premium wireless earbuds with 360° spatial audio and active noise cancellation",
     "features": [
       "Active Noise Cancellation",
@@ -28,7 +28,7 @@
     "category": "headphones",
     "price": 4999,
     "rating": 4.7,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61cIHzCDl6L._SX522_.jpg"],
     "description": "Over-ear wireless headphones with premium sound quality and comfort",
     "features": [
       "Hybrid ANC",
@@ -51,7 +51,7 @@
     "category": "speakers",
     "price": 3499,
     "rating": 4.4,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71kIRMs8nQL._SX679_.jpg"],
     "description": "Portable Bluetooth speaker with powerful bass and 360° sound",
     "features": [
       "360° Sound",
@@ -74,7 +74,7 @@
     "category": "soundbars",
     "price": 14999,
     "rating": 4.6,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/81RQ0yTAUhL._SX522_.jpg"],
     "description": "Premium soundbar with wireless subwoofer and Dolby Atmos",
     "features": [
       "Dolby Atmos",
@@ -97,7 +97,7 @@
     "category": "smartwatches",
     "price": 5999,
     "rating": 4.3,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61wpUnLObBL._SX522_.jpg"],
     "description": "Advanced smartwatch with health tracking and GPS",
     "features": [
       "Built-in GPS",
@@ -120,7 +120,7 @@
     "category": "accessories",
     "price": 1499,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/312QOlKmAqL.jpg"],
     "description": "Ultra-fast 65W GaN charger with dual USB-C ports",
     "features": [
       "65W Fast Charging",
@@ -143,7 +143,7 @@
     "category": "earbuds",
     "price": 1499,
     "rating": 4.2,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61IKUYZYfrL._SX522_.jpg"],
     "description": "Compact wireless earbuds with powerful sound",
     "features": [
       "30 Hour Playback",
@@ -166,7 +166,7 @@
     "category": "earbuds",
     "price": 2499,
     "rating": 4.4,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/51GedV-MUkL._SX522_.jpg"],
     "description": "Sports earbuds with secure fit and sweat resistance",
     "features": [
       "Secure Ear Hooks",
@@ -189,7 +189,7 @@
     "category": "earbuds",
     "price": 3499,
     "rating": 4.6,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/31yC2Bwe0IL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Premium ANC earbuds with exceptional sound quality",
     "features": [
       "Adaptive ANC",
@@ -212,7 +212,7 @@
     "category": "earbuds",
     "price": 999,
     "rating": 4.0,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61LRRhjhETL._SX522_.jpg"],
     "description": "Affordable wireless earbuds for everyday use",
     "features": [
       "25 Hour Playback",
@@ -235,7 +235,7 @@
     "category": "headphones",
     "price": 3999,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71quB2GTUKL._SX522_.jpg"],
     "description": "Bass-heavy over-ear headphones for music lovers",
     "features": [
       "Extra Bass Mode",
@@ -258,7 +258,7 @@
     "category": "headphones",
     "price": 6999,
     "rating": 4.8,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/41O6lkAlJIL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Studio-grade wireless headphones with Hi-Res audio",
     "features": [
       "Hi-Res Audio Certified",
@@ -281,7 +281,7 @@
     "category": "headphones",
     "price": 1999,
     "rating": 4.3,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/41pcgq-l9ML._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Compact on-ear headphones for portability",
     "features": [
       "Compact Design",
@@ -304,7 +304,7 @@
     "category": "headphones",
     "price": 1499,
     "rating": 4.4,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71QdB7hDCAL._SX522_.jpg"],
     "description": "Safe and colorful headphones designed for kids",
     "features": [
       "Volume Limited",
@@ -327,7 +327,7 @@
     "category": "headphones",
     "price": 3499,
     "rating": 4.6,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/31F20Q6c9hL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Gaming headphones with low latency and RGB",
     "features": [
       "40ms Low Latency",
@@ -350,7 +350,7 @@
     "category": "speakers",
     "price": 1999,
     "rating": 4.2,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/51TgeSZneTL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Compact portable speaker with big sound",
     "features": [
       "Portable Design",
@@ -373,7 +373,7 @@
     "category": "speakers",
     "price": 5999,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/3146nc3NoXL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "High-power party speaker with LED lights",
     "features": [
       "RGB LED Lights",
@@ -396,7 +396,7 @@
     "category": "speakers",
     "price": 4499,
     "rating": 4.4,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/41-NprJK5KL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Rugged outdoor speaker with extreme durability",
     "features": [
       "Shockproof Design",
@@ -419,7 +419,7 @@
     "category": "speakers",
     "price": 2999,
     "rating": 4.3,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61tqTmwlWiL._SX679_.jpg"],
     "description": "Smart home speaker with voice assistant",
     "features": [
       "Voice Control",
@@ -442,7 +442,7 @@
     "category": "speakers",
     "price": 7999,
     "rating": 4.7,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71YE6C0dtZL._SX679_.jpg"],
     "description": "Premium bookshelf speakers for audiophiles",
     "features": [
       "Hi-Res Audio",
@@ -465,7 +465,7 @@
     "category": "soundbars",
     "price": 7999,
     "rating": 4.3,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61LlujxyViL._SX522_.jpg"],
     "description": "Compact soundbar perfect for small rooms",
     "features": [
       "Virtual Surround",
@@ -488,7 +488,7 @@
     "category": "soundbars",
     "price": 24999,
     "rating": 4.8,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/416ZY9xg9DL._SX522_.jpg"],
     "description": "Premium soundbar with rear speakers and Dolby Atmos",
     "features": [
       "Dolby Atmos",
@@ -511,7 +511,7 @@
     "category": "soundbars",
     "price": 4999,
     "rating": 4.2,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/416ZY9xg9DL._SX522_.jpg"],
     "description": "Sleek soundbar for bedroom or small TV",
     "features": [
       "Compact Design",
@@ -534,7 +534,7 @@
     "category": "soundbars",
     "price": 12999,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/21jSK+ES8bL._SX300_SY300_QL70_FMwebp_.jpg"],
     "description": "Gaming-focused soundbar with low latency",
     "features": [
       "Low Latency Mode",
@@ -557,7 +557,7 @@
     "category": "soundbars",
     "price": 18999,
     "rating": 4.7,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71Tu1SzRh4L._SX522_.jpg"],
     "description": "Cinematic soundbar with immersive surround sound",
     "features": [
       "Dolby Atmos",
@@ -580,7 +580,7 @@
     "category": "smartwatches",
     "price": 2999,
     "rating": 4.1,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61VvUiCc22L._SX679_.jpg"],
     "description": "Affordable smartwatch with fitness tracking",
     "features": [
       "Heart Rate Monitor",
@@ -603,7 +603,7 @@
     "category": "smartwatches",
     "price": 9999,
     "rating": 4.6,
-    "images": ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71Ar4cKZKYL._SX679_.jpg"],
     "description": "Premium smartwatch with advanced health features",
     "features": [
       "ECG Monitor",
@@ -626,7 +626,7 @@
     "category": "smartwatches",
     "price": 4499,
     "rating": 4.4,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61bm7UEdGAL._SX679_.jpg"],
     "description": "Rugged sports watch for active lifestyles",
     "features": [
       "Military Grade Durability",
@@ -649,7 +649,7 @@
     "category": "smartwatches",
     "price": 3499,
     "rating": 4.2,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61Iw0g8zYYL._SX679_.jpg"],
     "description": "Stylish smartwatch with interchangeable straps",
     "features": [
       "Elegant Design",
@@ -672,7 +672,7 @@
     "category": "smartwatches",
     "price": 1999,
     "rating": 4.3,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/416LsrI-STL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "Safe smartwatch for kids with GPS tracking",
     "features": [
       "GPS Location",
@@ -695,7 +695,7 @@
     "category": "accessories",
     "price": 1999,
     "rating": 4.4,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/61SRdzgwPTL._SX679_.jpg"],
     "description": "High-capacity power bank with fast charging",
     "features": [
       "20000mAh Capacity",
@@ -718,7 +718,7 @@
     "category": "accessories",
     "price": 499,
     "rating": 4.3,
-    "images": ["/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/51ga1DANA8L._SX522_.jpg"],
     "description": "Braided USB-C to USB-C cable with 100W support",
     "features": [
       "100W Power Delivery",
@@ -741,7 +741,7 @@
     "category": "accessories",
     "price": 599,
     "rating": 4.2,
-    "images": ["/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/31+FvMpDxlL._SX342_SY445_QL70_FMwebp_.jpg"],
     "description": "MFi certified lightning cable with fast charging",
     "features": [
       "MFi Certified",
@@ -764,7 +764,7 @@
     "category": "accessories",
     "price": 1299,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/619KDYzfxZL._SX522_.jpg"],
     "description": "Fast wireless charging pad with LED indicator",
     "features": [
       "15W Fast Charging",
@@ -787,7 +787,7 @@
     "category": "accessories",
     "price": 699,
     "rating": 4.3,
-    "images": ["/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/615hWw+SUvL._SX522_.jpg"],
     "description": "Fast dual USB car charger with smart detection",
     "features": [
       "Dual USB Ports",
@@ -810,7 +810,7 @@
     "category": "accessories",
     "price": 799,
     "rating": 4.4,
-    "images": ["/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/617dVwDF7XL._SX679_.jpg"],
     "description": "Foldable phone stand with multiple angles",
     "features": [
       "Adjustable Angles",
@@ -833,7 +833,7 @@
     "category": "accessories",
     "price": 1599,
     "rating": 4.5,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71LWYz3q5PL._SX679_.jpg"],
     "description": "Powered USB 3.0 hub with 7 ports",
     "features": [
       "7 USB 3.0 Ports",
@@ -856,7 +856,7 @@
     "category": "accessories",
     "price": 399,
     "rating": 4.2,
-    "images": ["/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/6119+Q3wqwL._SX679_.jpg"],
     "description": "Tempered glass screen protector with case fit",
     "features": [
       "9H Hardness",
@@ -879,7 +879,7 @@
     "category": "accessories",
     "price": 899,
     "rating": 4.4,
-    "images": ["/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/71a+eT-Aw0L._SX522_.jpg"],
     "description": "Military-grade rugged phone case",
     "features": [
       "Military Grade",
@@ -902,7 +902,7 @@
     "category": "accessories",
     "price": 1199,
     "rating": 4.3,
-    "images": ["/placeholder.svg", "/placeholder.svg"],
+    "images": ["https://m.media-amazon.com/images/I/41ws3P26vwL._SY300_SX300_QL70_FMwebp_.jpg"],
     "description": "3-in-1 selfie stick with Bluetooth remote",
     "features": [
       "3-in-1 Design",
