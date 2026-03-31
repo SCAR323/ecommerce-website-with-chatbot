@@ -211,7 +211,17 @@ app.post("/api/chat", (req, res) => {
   res.json(replyData);
 });
 
+// 🚀 SERVE FRONTEND (SINGLE WEBSITE DEPLOYMENT)
+// Pointing to the "dist" folder where Vite builds the frontend
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../dist")));
+
+// Any route not handled by the API will serve the built React app
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Chatbot backend running on port ${PORT}`);
+  console.log(`Application running on port ${PORT}`);
 });

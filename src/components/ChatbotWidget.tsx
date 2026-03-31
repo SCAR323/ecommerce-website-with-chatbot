@@ -25,13 +25,14 @@ export default function ChatbotWidget() {
   async function sendMessage() {
     if (!input.trim()) return;
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const userMsg: Message = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/chat", {
+      const res = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg.text }),

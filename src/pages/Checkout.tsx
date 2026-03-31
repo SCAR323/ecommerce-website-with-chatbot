@@ -67,6 +67,7 @@ const Checkout = () => {
 
     const handlePaymentSuccess = async () => {
         try {
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
             const orderPayload = {
                 orderItems: cartItems.map((item) => ({
                     name: item.name,
@@ -83,7 +84,7 @@ const Checkout = () => {
                 totalPrice: grandTotal,
             };
 
-            const res = await fetch("http://localhost:5000/api/orders", {
+            const res = await fetch(`${API_BASE_URL}/api/orders`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -98,7 +99,7 @@ const Checkout = () => {
 
             // Mark as paid
             const order = await res.json();
-            await fetch(`http://localhost:5000/api/orders/${order._id}/pay`, {
+            await fetch(`${API_BASE_URL}/api/orders/${order._id}/pay`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
