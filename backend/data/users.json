@@ -12,5 +12,12 @@
     "email": "test@example.com",
     "password": "$2b$10$uKKriPbLz.AXguyA1kl9p.5z.gG5Oy9bJhL.aqp4se6Sw9errWyoC",
     "createdAt": "2026-02-21T09:11:52.468Z"
+  },
+  {
+    "id": "mneqel5fsuas33",
+    "username": "aabbcc",
+    "email": "aabbcc@gmail.com",
+    "password": "$2b$10$VmReeqw.KKbBWb4wwfTm7espUVGXQ3JdNnzeI5ztE3wLpR.QImpG.",
+    "createdAt": "2026-03-31T14:48:00.915Z"
   }
 ]

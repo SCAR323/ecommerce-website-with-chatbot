@@ -26,26 +26,29 @@ router.post(
 
         try {
             // Check if user already exists
-            const existingUser = User.findByEmail(email);
-            if (existingUser) {
+            let user = await User.findOne({ email });
+            if (user) {
                 return res
                     .status(400)
                     .json({ errors: [{ msg: "User already exists" }] });
             }
 
-            // Hash password
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-
-            // Save user
-            const newUser = User.createUser({
+            // Create new user instance
+            user = new User({
                 username,
                 email,
-                password: hashedPassword,
+                password,
             });
 
+            // Hash password
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+
+            // Save user to MongoDB
+            await user.save();
+
             // Generate JWT
-            const payload = { user: { id: newUser.id } };
+            const payload = { user: { id: user.id } };
 
             jwt.sign(
                 payload,
@@ -82,7 +85,7 @@ router.post(
         const { email, password } = req.body;
 
         try {
-            const user = User.findByEmail(email);
+            let user = await User.findOne({ email });
 
             if (!user) {
                 return res
@@ -120,15 +123,13 @@ router.post(
 // @route   GET /api/auth/me
 // @desc    Get logged in user
 // @access  Private
-router.get("/me", auth, (req, res) => {
+router.get("/me", auth, async (req, res) => {
     try {
-        const user = User.findById(req.user.id);
+        const user = await User.findById(req.user.id).select("-password");
         if (!user) {
             return res.status(404).json({ msg: "User not found" });
         }
-        // Return user without password
-        const { password, ...userWithoutPassword } = user;
-        res.json(userWithoutPassword);
+        res.json(user);
     } catch (err) {
         console.error("Auth/me error:", err.message);
         res.status(500).json({ msg: "Server Error" });

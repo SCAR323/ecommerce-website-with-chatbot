@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const normalizeQuery = require("./utils/normalizeQuery.cjs");
 const classifyIntent = require("./utils/classifyIntent.cjs");
@@ -15,7 +17,9 @@ const knowledgeBase = buildKnowledgeBase();
 const app = express();
 
 // 🔒 SECURITY MIDDLEWARE
-app.use(helmet()); // Secure HTTP headers
+app.use(helmet({
+  contentSecurityPolicy: false, // For local dev/demo
+}));
 
 // Request Logging Middleware
 app.use((req, res, next) => {
@@ -24,33 +28,31 @@ app.use((req, res, next) => {
 });
 
 // CORS Configuration
-const corsOptions = {
-  origin: "*", // ALLOW ALL FOR DEBUGGING
-  optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: "Too many requests from this IP, please try again later.",
 });
 app.use(limiter);
 
-// Strict Rate Limiting for Login
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, // INCREASED LIMIT TEMPORARILY FOR TESTING
-  message: {
-    errors: [{ msg: "Too many login attempts, please try again after 15 minutes." }]
-  },
+  max: 10,
+  message: "Too many login attempts, please try again after 15 minutes.",
 });
 
-app.use(express.json({ limit: "10kb" })); // Body parser with limit
+app.use(express.json({ limit: "10kb" }));
 
-// 📁 Using JSON file storage (backend/data/users.json)
-console.log("Using JSON file storage for user data");
+// 🗄️ DATABASE CONNECTION (MONGODB ATLAS)
+mongoose
+  .connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 8000, 
+  })
+  .then(() => console.log("✅ MongoDB Atlas connected successfully"))
+  .catch((err) => console.log("⚠️ MongoDB initial connection failed (check your IP/network):", err.message));
 
 // 🔒 STRICT CONTEXT MEMORY
 let lastContext = {
@@ -58,170 +60,55 @@ let lastContext = {
 };
 
 // 🛣️ ROUTES
-app.use("/api/auth/login", authLimiter); // Apply strict limit to login BEFORE mounting auth routes
-app.use("/api/auth", require("./routes/auth")); // Auth Routes
-app.use("/api/orders", require("./routes/orderRoutes")); // Order Routes
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/orders", require("./routes/orderRoutes"));
 
 app.post("/api/chat", (req, res) => {
   const message = req.body.message;
-
   if (!message || typeof message !== "string") {
     return res.status(400).json({ reply: "Invalid message format." });
   }
 
-  if (message.length > 500) {
-    return res.status(400).json({ reply: "Message too long." });
-  }
-
   const keywords = normalizeQuery(message);
   const intent = classifyIntent(keywords);
-
   let results = [];
 
-  /* =====================================================
-     1️⃣ PRICE QUERIES — STRICT PRODUCT NAME MATCH ONLY
-     ===================================================== */
+  // Chat logic (Prices, recommendations, etc.)
   if (intent === "price") {
-    const matchedProducts = knowledgeBase.filter(
-      (item) =>
-        item.type === "product" &&
-        keywords.some((word) => item.title.toLowerCase().includes(word))
+    results = knowledgeBase.filter(item => 
+      item.type === "product" && keywords.some(word => item.title.toLowerCase().includes(word))
     );
-
-    if (matchedProducts.length === 0) {
-      return res.json({
-        reply:
-          "I searched the website but couldn’t find pricing information for that product.",
-      });
-    }
-
-    results = matchedProducts;
   } else if (intent === "recommendation") {
-    // Extract budget
-    const budgetMatch = message.match(/\d+/); // Finds the first number
-    const budget = budgetMatch ? parseInt(budgetMatch[0]) : Infinity;
-
-    // Extract category
-    let category = null;
-    if (keywords.includes("headphone") || keywords.includes("headphones"))
-      category = "headphones";
-    else if (keywords.includes("earbud") || keywords.includes("earbuds"))
-      category = "earbuds";
-    else if (keywords.includes("speaker") || keywords.includes("speakers"))
-      category = "speakers";
-    else if (keywords.includes("watch") || keywords.includes("smartwatch"))
-      category = "smartwatches";
-    else if (keywords.includes("soundbar") || keywords.includes("soundbars"))
-      category = "soundbars";
-
-    // Filter products
-    results = knowledgeBase.filter((item) => {
-      const isProduct = item.type === "product";
-      const matchesCategory = category ? item.category === category : true;
-      const withinBudget = item.price <= budget;
-      return isProduct && matchesCategory && withinBudget;
-    });
-
-    // Sort by rating (popularity)
-    results.sort((a, b) => b.rating - a.rating);
-
-    // If no results found with specific criteria, relax budget
-    if (results.length === 0 && budget !== Infinity) {
-      results = knowledgeBase.filter((item) => {
-        return (
-          item.type === "product" &&
-          (category ? item.category === category : true)
-        );
-      });
-      results.sort((a, b) => a.price - b.price); // Show cheapest first if budget constraint failed
-    }
-  } else if (
-    /* =====================================================
-     3️⃣ BROWSE / LIST QUERIES (show / list headphones)
-     ===================================================== */
-    intent === "general" &&
-    (keywords.includes("headphones") ||
-      keywords.includes("products") ||
-      keywords.includes("items"))
-  ) {
-    results = knowledgeBase.filter(
-      (item) =>
-        item.type === "product" &&
-        item.content.toLowerCase().includes("headphone")
-    );
+     results = knowledgeBase.filter(item => item.type === "product");
   } else {
-    /* =====================================================
-     4️⃣ COMPARISON / NORMAL SEARCH (WITH FUZZY MATCH)
-     ===================================================== */
-    // 1. Exact/Partial Match
-    results = knowledgeBase.filter((item) =>
-      keywords.some(
-        (word) =>
-          item.title?.toLowerCase().includes(word) ||
-          item.content.toLowerCase().includes(word)
-      )
-    );
-
-    // 2. Fuzzy Match (if no exact matches)
-    if (results.length === 0) {
-      results = knowledgeBase.filter((item) =>
-        keywords.some((word) => {
-          const distance = levenshteinDistance(word, item.title.toLowerCase());
-          // Allow simplified threshold: 3 for longer words, 2 for shorter
-          const threshold = word.length > 5 ? 3 : 2;
-          // Also check against fuzzy version of product name parts?
-          // Simplest: check if any word in query is close to product name
-          return distance <= threshold;
-        })
-      );
-    }
-  }
-
-  /* =====================================================
-     4️⃣ CONTEXT MEMORY (ONLY FOR FOLLOW-UPS)
-     ===================================================== */
-  if (
-    results.length === 0 &&
-    lastContext.products.length > 0 &&
-    (intent === "warranty" || intent === "shipping")
-  ) {
-    results = knowledgeBase.filter((item) =>
-      lastContext.products.includes(item.title)
+    results = knowledgeBase.filter(item => 
+      keywords.some(word => item.title?.toLowerCase().includes(word) || item.content.toLowerCase().includes(word))
     );
   }
 
-  /* =====================================================
-     5️⃣ SAVE CONTEXT (ONLY REAL PRODUCTS)
-     ===================================================== */
-  lastContext.products = results
-    .filter((r) => r.type === "product")
-    .map((p) => p.title);
-
-  /* =====================================================
-     6️⃣ GENERATE FINAL ANSWER
-     ===================================================== */
   const response = reasoningEngine(intent, results);
-
-  // Ensure response is always an object with { reply, products }
-  const replyData =
-    typeof response === "string"
-      ? { reply: response, products: [] }
-      : { reply: response.text, products: response.products || [] };
+  const replyData = typeof response === "string" 
+    ? { reply: response, products: [] } 
+    : { reply: response.text, products: response.products || [] };
 
   res.json(replyData);
 });
 
 // 🚀 SERVE FRONTEND (SINGLE WEBSITE DEPLOYMENT)
 // Pointing to the "dist" folder where Vite builds the frontend
-const path = require("path");
 app.use(express.static(path.join(__dirname, "../dist")));
 
-// Any route not handled by the API will serve the built React app
-app.use((req, res) => {
+// Any route not handled by the API will serve the built React app (SPA logic)
+app.use((req, res, next) => {
+  // If it's an API route that wasn't found, don't serve index.html
+  if (req.url.startsWith('/api')) {
+    return res.status(404).json({ message: "API route not found" });
+  }
   res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Application running on port ${PORT}`);
+  console.log(`✅ Application running correctly on port ${PORT}`);
 });
