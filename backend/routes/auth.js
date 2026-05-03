@@ -26,24 +26,27 @@ router.post(
 
         try {
             // Check if user already exists
-            const existingUser = await User.findOne({ where: { email } });
-            if (existingUser) {
+            let user = await User.findOne({ email });
+            if (user) {
                 return res
                     .status(400)
                     .json({ errors: [{ msg: "User already exists" }] });
             }
 
-            // Hash password
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-
-            // Save user
-            const user = await User.create({
+            // Create new user instance
+            user = new User({
                 username,
                 email,
-                password: hashedPassword,
-                isAdmin: email === "admin@sonichub.com" // Auto-assign admin
+                password,
+                isAdmin: email === "admin@sonichub.com", // Auto-assign admin
             });
+
+            // Hash password
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+
+            // Save user to MongoDB
+            await user.save();
 
             // Send welcome email
             const { sendWelcomeEmail } = require("../utils/emailService");
@@ -87,7 +90,7 @@ router.post(
         const { email, password } = req.body;
 
         try {
-            const user = await User.findOne({ where: { email } });
+            let user = await User.findOne({ email });
 
             if (!user) {
                 return res
@@ -127,9 +130,7 @@ router.post(
 // @access  Private
 router.get("/me", auth, async (req, res) => {
     try {
-        const user = await User.findByPk(req.user.id, {
-            attributes: { exclude: ['password'] }
-        });
+        const user = await User.findById(req.user.id).select("-password");
         if (!user) {
             return res.status(404).json({ msg: "User not found" });
         }

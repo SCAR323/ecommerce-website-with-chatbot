@@ -10,7 +10,7 @@ const classifyIntent    = require("./utils/classifyIntent.cjs");
 const reasoningEngine   = require("./utils/reasoningEngine.cjs");
 const buildKnowledgeBase = require("./utils/buildKnowledge.cjs");
 const levenshteinDistance = require("./utils/stringUtils.cjs");
-const { connectDB, sequelize } = require("./config/db");
+const { connectDB } = require("./config/db");
 
 // Global KB variables
 let productKB = [];
@@ -20,13 +20,11 @@ const Sentry = require("@sentry/node");
 const { nodeProfilingIntegration } = require("@sentry/profiling-node");
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123", // User should replace this in .env
+  dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123",
   integrations: [
     nodeProfilingIntegration(),
   ],
-  // Performance Monitoring
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-  // Set sampling rate for profiling - this is relative to tracesSampleRate
+  tracesSampleRate: 1.0,
   profilesSampleRate: 1.0,
 });
 
@@ -51,7 +49,7 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 10,
   message: { errors: [{ msg: "Too many login attempts, please try again after 15 minutes." }] },
 });
 
@@ -60,7 +58,7 @@ app.use(express.json({ limit: "10kb" }));
 // ── Context memory (per-session follow-ups) ──────────────────────────────────
 let lastContext = { products: [] };
 
-// ── Auth, Order & Admin routes ──────────────────────────────────────────────────────
+// ── Auth, Order & Admin routes ─────────────────────────────────────────────
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/orders", require("./routes/orderRoutes"));
@@ -90,19 +88,19 @@ function searchProducts(tokens, fullText) {
 
   if (exactMatches.length > 0) {
     results.push(...exactMatches);
-    return results; // Return early to prevent partial/feature matching from adding unwanted items
+    return results;
   }
 
   // Only do partial token matching if no exact name was found
   productKB.forEach((item) => {
     const nameTokens = item.title.toLowerCase().split(/\s+/);
-    const hasSignificantMatch = tokens.some(t => 
+    const hasSignificantMatch = tokens.some(t =>
       t.length > 2 && nameTokens.some(nt => nt.includes(t))
     );
     if (hasSignificantMatch) add(item);
   });
 
-  // 2. Category match (e.g. "show me earbuds", "best headphones")
+  // 2. Category match
   const categoryMap = {
     earbud: "earbuds", earbuds: "earbuds",
     headphone: "headphones", headphones: "headphones",
@@ -152,7 +150,7 @@ function searchProducts(tokens, fullText) {
   if (results.length === 0) {
     productKB.forEach((item) => {
       const matched = tokens.some((word) => {
-        if (word.length < 4) return false; // Ignore short words for fuzzy match
+        if (word.length < 4) return false;
         const dist = levenshteinDistance(word, item.title.toLowerCase());
         return dist <= (word.length > 5 ? 3 : 2);
       });
@@ -163,16 +161,13 @@ function searchProducts(tokens, fullText) {
   return results;
 }
 
-// ── Helper: find best two products for comparison ───────────────────────────
-// Splits query on "and"/"vs"/"versus" and does a best-name-match per segment.
+// ── Helper: find best two products for comparison ─────────────────────────
 function findComparisonProducts(fullText) {
-  // Split on common comparison separators
   const parts = fullText
     .split(/\b(?:and|vs\.?|versus|or)\b/i)
     .map((s) => s.trim())
     .filter(Boolean);
 
-  // For each part, find the product whose name has the most overlapping words
   const matched = parts.map((part) => {
     const partWords = part.split(/\s+/).filter((w) => w.length > 2);
     let best = null;
@@ -185,7 +180,6 @@ function findComparisonProducts(fullText) {
     return best;
   });
 
-  // Return up to 2 unique, non-null products
   const unique = [];
   const seen = new Set();
   matched.forEach((p) => {
@@ -196,7 +190,6 @@ function findComparisonProducts(fullText) {
 
 // ── Helper: search FAQs ───────────────────────────────────────────────────────
 function searchFAQs(tokens, fullText, intent) {
-  // Map intents directly to FAQ ids
   const intentToFaq = {
     shipping: "faq-shipping",
     returns:  "faq-returns",
@@ -212,7 +205,6 @@ function searchFAQs(tokens, fullText, intent) {
     return faq ? [faq] : [];
   }
 
-  // Keyword-based FAQ search
   return faqKB.filter((faq) =>
     faq.keywords.some((kw) =>
       tokens.includes(kw) || fullText.includes(kw)
@@ -230,37 +222,26 @@ app.post("/api/chat", (req, res) => {
     return res.status(400).json({ reply: "Message too long.", products: [] });
   }
 
-  // Normalize
   const { tokens, fullText } = normalizeQuery(message);
-
-  // Classify intent (pass both tokens and full text)
   const intent = classifyIntent(tokens, fullText);
 
-  // Short-circuit for greeting — no search needed
   if (intent === "greeting") {
     const response = reasoningEngine("greeting", [], message);
     return res.json({ reply: response.text, products: [] });
   }
 
-  // ── Search ────────────────────────────────────────────────────────────────
   let productResults = [];
   let faqResults     = [];
 
-  // FAQ-only intents
   const faqOnlyIntents = ["shipping", "returns", "payment", "about", "categories", "contact"];
   if (faqOnlyIntents.includes(intent)) {
     faqResults = searchFAQs(tokens, fullText, intent);
   } else if (intent === "warranty") {
-    // Warranty: check if user asked about a specific product
     productResults = searchProducts(tokens, fullText);
     faqResults     = searchFAQs(tokens, fullText, intent);
   } else {
-    // Product-related intents (price, recommendation, comparison, features, specs, general)
-
-    // Comparison: use dedicated two-product extractor
     if (intent === "comparison") {
       productResults = findComparisonProducts(fullText);
-      // Fallback to broad search if we can't find 2 named products
       if (productResults.length < 2) {
         productResults = searchProducts(tokens, fullText).slice(0, 2);
       }
@@ -268,26 +249,20 @@ app.post("/api/chat", (req, res) => {
       productResults = searchProducts(tokens, fullText);
     }
 
-    // Budget filter for recommendations
     if (intent === "recommendation") {
       const budgetMatch = message.match(/\d+/g);
-      // Use the largest number as budget (e.g. "under 5000")
       const budget = budgetMatch
         ? Math.max(...budgetMatch.map(Number))
         : Infinity;
 
       if (budget < Infinity) {
         const filtered = productResults.filter((p) => p.price <= budget);
-        // Only apply filter if it gives results; otherwise keep all
         if (filtered.length > 0) productResults = filtered;
       }
 
-      // Sort by rating descending
       productResults.sort((a, b) => b.rating - a.rating);
     }
-    // end else (non-comparison)
 
-    // Context memory fallback for follow-up questions
     if (
       productResults.length === 0 &&
       lastContext.products.length > 0 &&
@@ -298,19 +273,13 @@ app.post("/api/chat", (req, res) => {
       );
     }
 
-    // Also fetch relevant FAQs (e.g. warranty FAQ for warranty intent)
     faqResults = searchFAQs(tokens, fullText, intent);
   }
 
-  // Combine results (products first, then FAQs)
   const allResults = [...productResults, ...faqResults];
-
-  // Update context memory (only real products)
   lastContext.products = productResults.slice(0, 4).map((p) => p.title);
 
-  // ── Generate reply ────────────────────────────────────────────────────────
   const response = reasoningEngine(intent, allResults, message);
-
   const replyData =
     typeof response === "string"
       ? { reply: response, products: [] }
@@ -320,19 +289,15 @@ app.post("/api/chat", (req, res) => {
 });
 
 // 🚀 SERVE FRONTEND (SINGLE WEBSITE DEPLOYMENT)
-// Pointing to the "dist" folder where Vite builds the frontend
 app.use(express.static(path.join(__dirname, "../dist")));
-
-// Any route not handled by the API will serve the built React app (SPA logic)
 app.use((req, res, next) => {
-  // If it's an API route that wasn't found, don't serve index.html
   if (req.url.startsWith('/api')) {
     return res.status(404).json({ message: "API route not found" });
   }
   res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
-// The error handler must be before any other error middleware and after all controllers
+// Sentry error handler
 Sentry.setupExpressErrorHandler(app);
 
 // ── Start server ──────────────────────────────────────────────────────────────
@@ -341,16 +306,14 @@ const PORT = process.env.PORT || 5000;
 async function startServer() {
   try {
     await connectDB();
-    // Sync models without dropping tables in production, but here we can sync
-    await sequelize.sync();
-    
+
     const knowledgeBase = await buildKnowledgeBase();
     productKB = knowledgeBase.filter((k) => k.type === "product");
     faqKB     = knowledgeBase.filter((k) => k.type === "faq");
 
     app.listen(PORT, () => {
-      console.log(`✅ SonicHub chatbot backend running on port ${PORT}`);
-      console.log(`📦 Knowledge base loaded from SQLite: ${productKB.length} products, ${faqKB.length} FAQs`);
+      console.log(`✅ SonicHub backend running on port ${PORT}`);
+      console.log(`📦 Knowledge base loaded from MongoDB: ${productKB.length} products, ${faqKB.length} FAQs`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error);

@@ -1,9 +1,10 @@
-const { sequelize } = require('./config/db');
-const Product = require('./models/Product');
-const FAQ = require('./models/FAQ');
-const User = require('./models/User');
-const Order = require('./models/Order');
-const productsData = require('../src/data/products.json');
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+const { connectDB } = require("./config/db");
+const Product = require("./models/Product");
+const FAQ = require("./models/FAQ");
+const productsData = require("../src/data/products.json");
 
 // Hardcoded FAQs
 const faqEntries = [
@@ -53,14 +54,15 @@ const faqEntries = [
 
 const seedDatabase = async () => {
     try {
-        await sequelize.authenticate();
-        console.log('✅ Connected to SQLite database for seeding');
+        await connectDB();
+        console.log("🔗 Connected to MongoDB for seeding");
 
-        // Sync models to DB (force: true drops existing tables)
-        await sequelize.sync({ force: true });
-        console.log('🗑️  Synced Database Tables (Cleared existing)');
+        // Clear existing data
+        await Product.deleteMany({});
+        await FAQ.deleteMany({});
+        console.log("🗑️  Cleared existing Products and FAQs");
 
-        // Transform products data to match Sequelize schema
+        // Transform products data to match Mongoose schema
         const productsToInsert = productsData.map(p => ({
             productId: p.id,
             name: p.name,
@@ -73,13 +75,13 @@ const seedDatabase = async () => {
             specs: p.specs
         }));
 
-        await Product.bulkCreate(productsToInsert);
-        await FAQ.bulkCreate(faqEntries);
+        await Product.insertMany(productsToInsert);
+        await FAQ.insertMany(faqEntries);
 
-        console.log(`🌱 Seeded ${productsToInsert.length} products and ${faqEntries.length} FAQs`);
-        process.exit();
+        console.log(`🌱 Seeded ${productsToInsert.length} products and ${faqEntries.length} FAQs into MongoDB`);
+        process.exit(0);
     } catch (error) {
-        console.error('❌ Error seeding database:', error.message);
+        console.error("❌ Error seeding database:", error.message);
         process.exit(1);
     }
 };

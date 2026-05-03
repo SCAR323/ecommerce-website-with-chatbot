@@ -1,23 +1,23 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+const mongoose = require("mongoose");
 
-const FAQ = sequelize.define('FAQ', {
+const FAQSchema = new mongoose.Schema({
     faqId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        type: String,
+        required: true,
+        unique: true,
     },
     title: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     keywords: {
-        type: DataTypes.JSON,
+        type: [String],
+        default: [],
     },
     content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    }
+        type: String,
+        required: true,
+    },
 });
 
-module.exports = FAQ;
+module.exports = mongoose.model("FAQ", FAQSchema);

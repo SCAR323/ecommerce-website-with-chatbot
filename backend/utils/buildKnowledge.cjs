@@ -3,8 +3,8 @@ const FAQ = require("../models/FAQ");
 
 async function buildKnowledgeBase() {
   try {
-    const products = await Product.findAll();
-    const faqs = await FAQ.findAll();
+    const products = await Product.find({});
+    const faqs = await FAQ.find({});
 
     // ── Product entries (one per product) ─────────────────────────────────────
     const productEntries = products.map((p) => {

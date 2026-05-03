@@ -37,7 +37,7 @@ router.post('/', auth, async (req, res) => {
         let razorpayOrder;
         try {
             const options = {
-                amount: Math.round(totalPrice * 100), // amount in smallest currency unit (paise)
+                amount: Math.round(totalPrice * 100), // amount in paise
                 currency: "INR",
                 receipt: `receipt_order_${Date.now()}`
             };
@@ -47,10 +47,10 @@ router.post('/', auth, async (req, res) => {
             return res.status(500).json({ message: 'Payment gateway configuration error. Please check Razorpay keys.' });
         }
 
-        // 2. Save order in SQLite using Sequelize
-        const order = await Order.create({
+        // 2. Save order in MongoDB
+        const order = new Order({
             orderItems,
-            userId: req.user.id,
+            user: req.user.id,
             shippingAddress,
             paymentMethod,
             itemsPrice,
@@ -63,8 +63,10 @@ router.post('/', auth, async (req, res) => {
             }
         });
 
+        const createdOrder = await order.save();
+
         res.status(201).json({
-            order: order,
+            order: createdOrder,
             razorpayOrderId: razorpayOrder.id,
             amount: razorpayOrder.amount,
             currency: razorpayOrder.currency
@@ -80,11 +82,11 @@ router.post('/', auth, async (req, res) => {
 // @access  Private
 router.get('/myorders', auth, async (req, res) => {
     try {
-        const orders = await Order.findAll({ where: { userId: req.user.id } });
+        const orders = await Order.find({ user: req.user.id });
         res.json(orders);
     } catch (error) {
         console.error("Get my orders error:", error);
-        res.status(500).json({ message: 'Failed to fetch orders' });
+        res.status(500).json({ message: 'Error fetching orders' });
     }
 });
 
@@ -94,10 +96,7 @@ router.get('/myorders', auth, async (req, res) => {
 const admin = require('../middleware/admin');
 router.get('/', auth, admin, async (req, res) => {
     try {
-        // Includes user info like the mongoose populate did
-        const orders = await Order.findAll({
-            include: [{ model: User, as: 'user', attributes: ['id', 'username', 'email'] }]
-        });
+        const orders = await Order.find({}).populate('user', 'id username email');
         res.json(orders);
     } catch (error) {
         console.error("Get all orders error:", error);
@@ -110,9 +109,7 @@ router.get('/', auth, admin, async (req, res) => {
 // @access  Private
 router.get('/:id', auth, async (req, res) => {
     try {
-        const order = await Order.findByPk(req.params.id, {
-            include: [{ model: User, as: 'user', attributes: ['username', 'email'] }]
-        });
+        const order = await Order.findById(req.params.id).populate('user', 'username email');
 
         if (order) {
             res.json(order);
@@ -132,7 +129,7 @@ router.put('/:id/pay', auth, async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     try {
-        const order = await Order.findByPk(req.params.id);
+        const order = await Order.findById(req.params.id);
 
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
@@ -150,7 +147,7 @@ router.put('/:id/pay', auth, async (req, res) => {
         }
 
         order.isPaid = true;
-        order.paidAt = new Date();
+        order.paidAt = Date.now();
         order.paymentResult = {
             id: razorpay_payment_id,
             status: "paid",
@@ -158,19 +155,19 @@ router.put('/:id/pay', auth, async (req, res) => {
             email_address: req.user.email || req.body.email_address
         };
 
-        await order.save();
+        const updatedOrder = await order.save();
 
         // Send payment success & order confirmation emails
-        const user = await User.findByPk(req.user.id);
+        const user = await User.findById(req.user.id);
         if (user) {
-            sendPaymentSuccessEmail(user.email, user.username, order.totalPrice, razorpay_payment_id)
+            sendPaymentSuccessEmail(user.email, user.username, updatedOrder.totalPrice, razorpay_payment_id)
                 .catch(err => console.error("Payment success email failed:", err.message));
-                
-            sendOrderConfirmation(user.email, user.username, order.id, order.totalPrice)
+
+            sendOrderConfirmation(user.email, user.username, updatedOrder._id, updatedOrder.totalPrice)
                 .catch(err => console.error("Order confirmation email failed:", err.message));
         }
 
-        res.json(order);
+        res.json(updatedOrder);
     } catch (error) {
         console.error('Payment verification error:', error);
         res.status(500).json({ message: 'Payment update failed' });

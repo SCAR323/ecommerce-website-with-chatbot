@@ -1,67 +1,77 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
+const mongoose = require("mongoose");
 
-const Order = sequelize.define('Order', {
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
+const orderSchema = mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "user",
     },
-    orderItems: {
-        type: DataTypes.JSON, // SQLite supports JSON functions
-        allowNull: false,
-    },
+    orderItems: [
+      {
+        name: { type: String, required: true },
+        qty: { type: Number, required: true },
+        image: { type: String, required: true },
+        price: { type: Number, required: true },
+        product: { type: String, required: false },
+      },
+    ],
     shippingAddress: {
-        type: DataTypes.JSON,
-        allowNull: false,
+      address: { type: String, required: true },
+      city: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      country: { type: String, required: true },
     },
     paymentMethod: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: String,
+      required: true,
     },
     paymentResult: {
-        type: DataTypes.JSON,
+      id: { type: String },
+      status: { type: String },
+      update_time: { type: String },
+      email_address: { type: String },
     },
     itemsPrice: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        defaultValue: 0.0,
+      type: Number,
+      required: true,
+      default: 0.0,
     },
     taxPrice: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        defaultValue: 0.0,
+      type: Number,
+      required: true,
+      default: 0.0,
     },
     shippingPrice: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        defaultValue: 0.0,
+      type: Number,
+      required: true,
+      default: 0.0,
     },
     totalPrice: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        defaultValue: 0.0,
+      type: Number,
+      required: true,
+      default: 0.0,
     },
     isPaid: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+      type: Boolean,
+      required: true,
+      default: false,
     },
     paidAt: {
-        type: DataTypes.DATE,
+      type: Date,
     },
     isDelivered: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+      type: Boolean,
+      required: true,
+      default: false,
     },
     deliveredAt: {
-        type: DataTypes.DATE,
+      type: Date,
     },
-});
+  },
+  {
+    timestamps: true,
+  }
+);
 
-Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-User.hasMany(Order, { foreignKey: 'userId' });
-
-module.exports = Order;
+module.exports = mongoose.model("Order", orderSchema);
