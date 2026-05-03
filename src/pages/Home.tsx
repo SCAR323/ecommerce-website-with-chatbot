@@ -4,7 +4,11 @@ import { ProductCard } from "@/components/ProductCard";
 import { Headphones, Speaker, Watch, Zap } from "lucide-react";
 import productsData from "@/data/products.json";
 
-const Home = () => {
+interface HomeProps {
+  onOpenChat: () => void;
+}
+
+const Home = ({ onOpenChat }: HomeProps) => {
   const featuredProducts = productsData.slice(0, 4);
   const bestSellers = productsData.filter((p) => p.rating >= 4.5).slice(0, 4);
 
@@ -99,7 +103,11 @@ const Home = () => {
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Our AI assistant can help you find the perfect product for your needs
           </p>
-          <Button size="lg" className="bg-gradient-accent hover:opacity-90 transition-smooth">
+          <Button
+            size="lg"
+            className="bg-gradient-accent hover:opacity-90 transition-smooth"
+            onClick={onOpenChat}
+          >
             Chat with AI Assistant
           </Button>
         </div>

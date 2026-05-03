@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Message = {
   sender: "user" | "bot";
@@ -23,8 +24,13 @@ const WELCOME_MESSAGE: Message = {
   timestamp: new Date(),
 };
 
-export default function ChatbotWidget() {
-  const [open, setOpen]       = useState(false);
+type ChatbotWidgetProps = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function ChatbotWidget({ open, setOpen }: ChatbotWidgetProps) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput]     = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,6 +55,13 @@ export default function ChatbotWidget() {
     }
   }, [open]);
 
+  // Keep focus in the input after the bot finishes replying
+  useEffect(() => {
+    if (open && !loading) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [open, loading, messages.length]);
+
   async function sendMessage() {
     const trimmed = input.trim();
     if (!trimmed) return;
@@ -63,7 +76,20 @@ export default function ChatbotWidget() {
     setInput("");
     setLoading(true);
 
+    // Add thinking message
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: "🤔 Thinking...",
+        timestamp: new Date(),
+      },
+    ]);
+
     try {
+      // Add a small delay before fetching
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       const res = await fetch("http://localhost:5000/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,16 +109,22 @@ export default function ChatbotWidget() {
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, botMsg]);
+      // Replace the thinking message with the actual response
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = botMsg;
+        return updated;
+      });
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
           sender: "bot",
           text: "⚠️ Unable to reach the AI server. Please make sure the backend is running on port 5000.",
           timestamp: new Date(),
-        },
-      ]);
+        };
+        return updated;
+      });
     } finally {
       setLoading(false);
     }
@@ -285,6 +317,7 @@ export default function ChatbotWidget() {
                     {m.products.map((p) => (
                       <div
                         key={p.id}
+                        onClick={() => navigate(`/product/${p.id}`)}
                         style={{
                           minWidth: 160,
                           maxWidth: 175,
