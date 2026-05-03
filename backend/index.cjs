@@ -61,6 +61,7 @@ const authLimiter = rateLimit({
 app.use(express.json({ limit: "10kb" }));
 
 // 🗄️ DATABASE CONNECTION (MONGODB ATLAS)
+require("dns").setServers(["8.8.8.8", "8.8.4.4"]);
 mongoose
   .connect(process.env.MONGO_URI, {
     serverSelectionTimeoutMS: 8000, 
