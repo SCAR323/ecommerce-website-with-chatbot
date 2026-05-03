@@ -4,6 +4,7 @@ interface User {
     id: string;
     username: string;
     email: string;
+    isAdmin: boolean;
 }
 
 interface AuthContextType {
@@ -16,6 +17,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
@@ -23,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (token) {
             // Fetch user details with token
-            fetch("http://localhost:5000/api/auth/me", {
+            fetch(`${API_BASE_URL}/api/auth/me`, {
                 headers: { "x-auth-token": token },
             })
                 .then((res) => {
