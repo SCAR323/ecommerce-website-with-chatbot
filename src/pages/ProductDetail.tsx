@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,11 @@ const ProductDetail = () => {
   const { addToCart } = useCartStore();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const product = productsData.find((p) => p.id === Number(id));
 
@@ -40,11 +46,11 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image Gallery */}
         <div>
-          <div className="aspect-square rounded-2xl overflow-hidden bg-muted/50 mb-4">
+          <div className="rounded-2xl overflow-hidden bg-muted/50 mb-4 flex items-center justify-center" style={{ maxHeight: "70vh" }}>
             <img
               src={product.images[0]}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain max-h-[70vh]"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">

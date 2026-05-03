@@ -1,11 +1,41 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X } from "lucide-react";
+import { X, Sparkles, Loader2 } from "lucide-react";
 import { useCompareStore } from "@/store/compareStore";
 import { Link } from "react-router-dom";
 
 const Compare = () => {
   const { compareProducts, removeFromCompare, clearCompare } = useCompareStore();
+  const [summary, setSummary] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const generateSummary = async () => {
+    if (compareProducts.length !== 2) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://localhost:5000/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `Compare ${compareProducts[0].name} and ${compareProducts[1].name}`,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch summary");
+      
+      const data = await response.json();
+      setSummary(data.reply);
+    } catch (error) {
+      console.error("Error generating comparison summary:", error);
+      setSummary("Sorry, I encountered an error while generating the comparison. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (compareProducts.length === 0) {
     return (
@@ -82,15 +112,57 @@ const Compare = () => {
       </div>
 
       {compareProducts.length === 2 && (
-        <Card className="bg-gradient-card border-border">
+        <Card className="bg-gradient-card border-border overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 border-b">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-accent" />
+              <CardTitle className="text-xl">AI Comparison Summary</CardTitle>
+            </div>
+          </CardHeader>
           <CardContent className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Comparison Summary</h3>
-            <p className="text-muted-foreground mb-4">
-              Need help deciding? Our AI assistant can provide a detailed comparison and recommendation.
-            </p>
-            <Button className="bg-gradient-accent hover:opacity-90">
-              Ask AI Assistant
-            </Button>
+            {!summary && !isLoading && (
+              <>
+                <p className="text-muted-foreground mb-4">
+                  Need help deciding? Our AI assistant can analyze the specifications, pricing, and features of these products to give you a personalized recommendation.
+                </p>
+                <Button 
+                  onClick={generateSummary}
+                  className="bg-gradient-accent hover:opacity-90 shadow-lg shadow-accent/20"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Generate AI Analysis
+                </Button>
+              </>
+            )}
+
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground animate-pulse">
+                  AI is analyzing specifications and features...
+                </p>
+              </div>
+            )}
+
+            {summary && !isLoading && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="prose prose-invert max-w-none">
+                  {summary.split('\n').map((line, i) => (
+                    <p key={i} className="text-muted-foreground leading-relaxed">
+                      {line}
+                    </p>
+                  ))}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setSummary(null)}
+                  className="mt-4"
+                >
+                  Clear Summary
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

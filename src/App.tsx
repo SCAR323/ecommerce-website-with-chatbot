@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,18 +26,24 @@ import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <Navbar />
-            <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<Home />} />
+const App = () => {
+  const [chatOpen, setChatOpen] = useState(false);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <BrowserRouter>
+            <div className="min-h-screen flex flex-col bg-background text-foreground">
+              <Navbar />
+              <main className="flex-1">
+                <Routes>
+                  <Route
+                    path="/"
+                    element={<Home onOpenChat={() => setChatOpen(true)} />}
+                  />
                 <Route path="/products" element={<Products />} />
                 <Route path="/category/:category" element={<Category />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
@@ -54,12 +61,13 @@ const App = () => (
               </Routes>
             </main>
             <Footer />
-            <ChatbotWidget />
+            <ChatbotWidget open={chatOpen} setOpen={setChatOpen} />
           </div>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
