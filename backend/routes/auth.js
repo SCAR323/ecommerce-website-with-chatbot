@@ -38,6 +38,7 @@ router.post(
                 username,
                 email,
                 password,
+                isAdmin: email === "admin@sonichub.com" // Auto-assign admin
             });
 
             // Hash password
@@ -46,6 +47,10 @@ router.post(
 
             // Save user to MongoDB
             await user.save();
+
+            // Send welcome email
+            const { sendWelcomeEmail } = require("../utils/emailService");
+            sendWelcomeEmail(email, username).catch(err => console.error("Welcome email failed:", err));
 
             // Generate JWT
             const payload = { user: { id: user.id } };

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, User, LogOut, Package } from "lucide-react";
+import { ShoppingCart, Menu, X, User, LogOut, Package, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -80,6 +80,12 @@ export const Navbar = () => {
                   <DropdownMenuItem className="cursor-pointer">
                     Profile: {user?.username}
                   </DropdownMenuItem>
+                  {user?.isAdmin && (
+                    <DropdownMenuItem className="cursor-pointer font-bold text-primary" onClick={() => navigate('/admin')}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/orders')}>
                     <Package className="mr-2 h-4 w-4" />
                     Order History
@@ -169,6 +175,14 @@ export const Navbar = () => {
                 <div className="text-sm font-medium text-muted-foreground px-2">
                   Signed in as {user?.username}
                 </div>
+                {user?.isAdmin && (
+                  <Link to="/admin" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start text-primary font-bold">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="destructive" size="sm" className="w-full" onClick={() => {
                   handleLogout();
                   setIsOpen(false);

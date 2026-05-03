@@ -14,6 +14,20 @@ const levenshteinDistance = require("./utils/stringUtils.cjs");
 
 const knowledgeBase = buildKnowledgeBase();
 
+const Sentry = require("@sentry/node");
+const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123", // User should replace this in .env
+  integrations: [
+    nodeProfilingIntegration(),
+  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0, //  Capture 100% of the transactions
+  // Set sampling rate for profiling - this is relative to tracesSampleRate
+  profilesSampleRate: 1.0,
+});
+
 const app = express();
 
 // 🔒 SECURITY MIDDLEWARE
@@ -63,6 +77,7 @@ let lastContext = {
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/orders", require("./routes/orderRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 app.post("/api/chat", (req, res) => {
   const message = req.body.message;
@@ -107,6 +122,9 @@ app.use((req, res, next) => {
   }
   res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
+
+// The error handler must be before any other error middleware and after all controllers
+Sentry.setupExpressErrorHandler(app);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

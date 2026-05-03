@@ -8,15 +8,13 @@ import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import PaymentModal from "@/components/PaymentModal";
 
 const Checkout = () => {
     const { cartItems, getCartTotal, clearCart } = useCartStore();
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated, token, user } = useAuth();
     const { toast } = useToast();
     const navigate = useNavigate();
 
-    const [showPayment, setShowPayment] = useState(false);
     const [shipping, setShipping] = useState({
         address: "",
         city: "",
@@ -44,7 +42,7 @@ const Checkout = () => {
         );
     }
 
-    const handleProceedToPayment = () => {
+    const handleProceedToPayment = async () => {
         if (!isAuthenticated) {
             toast({
                 title: "Login Required",
@@ -62,68 +60,115 @@ const Checkout = () => {
             });
             return;
         }
-        setShowPayment(true);
-    };
 
-    const handlePaymentSuccess = async () => {
+        if (!(window as any).Razorpay) {
+            toast({
+                title: "Payment Error",
+                description: "Razorpay SDK failed to load. Please check your internet connection.",
+                variant: "destructive",
+            });
+            return;
+        }
+
         try {
             const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-            const orderPayload = {
-                orderItems: cartItems.map((item) => ({
-                    name: item.name,
-                    qty: item.qty,
-                    image: item.image,
-                    price: item.price,
-                    product: item.id,
-                })),
-                shippingAddress: shipping,
-                paymentMethod: "Card",
-                itemsPrice: total,
-                taxPrice: tax,
-                shippingPrice: shippingCost,
-                totalPrice: grandTotal,
-            };
-
-            const res = await fetch(`${API_BASE_URL}/api/orders`, {
+            
+            const orderRes = await fetch(`${API_BASE_URL}/api/orders`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "x-auth-token": token || "",
                 },
-                body: JSON.stringify(orderPayload),
-            });
-
-            if (!res.ok) {
-                throw new Error("Failed to create order");
-            }
-
-            // Mark as paid
-            const order = await res.json();
-            await fetch(`${API_BASE_URL}/api/orders/${order._id}/pay`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-auth-token": token || "",
-                },
                 body: JSON.stringify({
-                    id: `SIM_${Date.now()}`,
-                    status: "COMPLETED",
-                    update_time: new Date().toISOString(),
-                    email_address: "simulation@sonic-hub.com",
+                    orderItems: cartItems.map(item => ({
+                        name: item.name,
+                        qty: item.qty,
+                        image: item.image,
+                        price: item.price,
+                        product: item.id
+                    })),
+                    shippingAddress: shipping,
+                    paymentMethod: "Razorpay",
+                    itemsPrice: total,
+                    taxPrice: tax,
+                    shippingPrice: shippingCost,
+                    totalPrice: grandTotal
                 }),
             });
 
-            clearCart();
-            setShowPayment(false);
+            if (!orderRes.ok) {
+                let errorMessage = "Failed to create order";
+                try {
+                    const errData = await orderRes.json();
+                    errorMessage = errData.message || errorMessage;
+                } catch (e) {
+                    // Ignore JSON parsing errors
+                }
+                throw new Error(errorMessage);
+            }
+            
+            const { order, razorpayOrderId, amount, currency } = await orderRes.json();
+
+            // 2. Open Razorpay Checkout
+
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: amount,
+                currency: currency,
+                name: "Sonic Hub",
+                description: "Purchase Payment",
+                order_id: razorpayOrderId,
+                handler: async (response: any) => {
+                    // 3. Verify payment on backend and mark order as paid
+                    try {
+                        const verifyRes = await fetch(`${API_BASE_URL}/api/orders/${order._id}/pay`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "x-auth-token": token || "",
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                            }),
+                        });
+
+                        if (verifyRes.ok) {
+                            clearCart();
+                            toast({
+                                title: "Payment Successful! 🎉",
+                                description: "Your order has been placed successfully. A confirmation email has been sent.",
+                            });
+                            navigate("/orders");
+                        } else {
+                            throw new Error("Payment verification failed");
+                        }
+                    } catch (err: any) {
+                        toast({
+                            title: "Verification Failed",
+                            description: err.message || "Could not verify your payment. Please contact support.",
+                            variant: "destructive",
+                        });
+                    }
+                },
+                prefill: {
+                    name: user?.username,
+                    email: user?.email,
+                },
+                theme: {
+                    color: "#7c3aed",
+                },
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+
+        } catch (err: any) {
+            console.error("Checkout process error:", err);
             toast({
-                title: "Order Placed! 🎉",
-                description: "Your order has been successfully placed.",
-            });
-            navigate("/orders");
-        } catch (err) {
-            toast({
-                title: "Order Failed",
-                description: "Something went wrong. Please try again.",
+                title: "Checkout Error",
+                description: err.message || "Something went wrong. Please try again.",
                 variant: "destructive",
             });
         }
@@ -269,14 +314,6 @@ const Checkout = () => {
                     </Card>
                 </div>
             </div>
-
-            {/* Payment Modal */}
-            <PaymentModal
-                open={showPayment}
-                onClose={() => setShowPayment(false)}
-                onSuccess={handlePaymentSuccess}
-                amount={grandTotal}
-            />
         </div>
     );
 };
