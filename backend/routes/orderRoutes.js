@@ -21,18 +21,23 @@ router.post('/', auth, async (req, res) => {
         res.status(400).json({ message: 'No order items' });
         return;
     } else {
-        const order = Order.createOrder({
-            orderItems,
-            user: req.user.id,
-            shippingAddress,
-            paymentMethod,
-            itemsPrice,
-            taxPrice,
-            shippingPrice,
-            totalPrice
-        });
+        try {
+            const order = await Order.create({
+                orderItems,
+                userId: req.user.id,
+                shippingAddress,
+                paymentMethod,
+                itemsPrice,
+                taxPrice,
+                shippingPrice,
+                totalPrice
+            });
 
-        res.status(201).json(order);
+            res.status(201).json(order);
+        } catch (error) {
+            console.error("Create order error:", error);
+            res.status(500).json({ message: 'Failed to create order' });
+        }
     }
 });
 
@@ -41,20 +46,30 @@ router.post('/', auth, async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 router.get('/myorders', auth, async (req, res) => {
-    const orders = Order.findByUserId(req.user.id);
-    res.json(orders);
+    try {
+        const orders = await Order.findAll({ where: { userId: req.user.id } });
+        res.json(orders);
+    } catch (error) {
+        console.error("Get my orders error:", error);
+        res.status(500).json({ message: 'Failed to fetch orders' });
+    }
 });
 
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
 // @access  Private
 router.get('/:id', auth, async (req, res) => {
-    const order = Order.findById(req.params.id);
+    try {
+        const order = await Order.findByPk(req.params.id);
 
-    if (order) {
-        res.json(order);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
+        if (order) {
+            res.json(order);
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error("Get order by ID error:", error);
+        res.status(500).json({ message: 'Failed to fetch order' });
     }
 });
 
@@ -62,24 +77,28 @@ router.get('/:id', auth, async (req, res) => {
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 router.put('/:id/pay', auth, async (req, res) => {
-    const order = Order.findById(req.params.id);
+    try {
+        const order = await Order.findByPk(req.params.id);
 
-    if (order) {
-        const updatedOrder = Order.updateOrder(req.params.id, {
-            isPaid: true,
-            paidAt: new Date().toISOString(),
-            paymentResult: {
+        if (order) {
+            order.isPaid = true;
+            order.paidAt = new Date();
+            order.paymentResult = {
                 id: req.body.id,
                 status: req.body.status,
                 update_time: req.body.update_time,
                 email_address: req.body.email_address
-            }
-        });
-        res.json(updatedOrder);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
+            };
+
+            await order.save();
+            res.json(order);
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error("Update order to paid error:", error);
+        res.status(500).json({ message: 'Failed to update order' });
     }
 });
 
 module.exports = router;
-

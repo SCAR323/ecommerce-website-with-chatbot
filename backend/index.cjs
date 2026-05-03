@@ -4,205 +4,296 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
-const normalizeQuery = require("./utils/normalizeQuery.cjs");
-const classifyIntent = require("./utils/classifyIntent.cjs");
-const reasoningEngine = require("./utils/reasoningEngine.cjs");
+const normalizeQuery    = require("./utils/normalizeQuery.cjs");
+const classifyIntent    = require("./utils/classifyIntent.cjs");
+const reasoningEngine   = require("./utils/reasoningEngine.cjs");
 const buildKnowledgeBase = require("./utils/buildKnowledge.cjs");
 const levenshteinDistance = require("./utils/stringUtils.cjs");
+const { connectDB, sequelize } = require("./config/db");
 
-const knowledgeBase = buildKnowledgeBase();
+// Global KB variables
+let productKB = [];
+let faqKB = [];
 
 const app = express();
 
-// 🔒 SECURITY MIDDLEWARE
-app.use(helmet()); // Secure HTTP headers
+// ── Security middleware ──────────────────────────────────────────────────────
+app.use(helmet());
 
-// Request Logging Middleware
+// Request logging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// CORS Configuration
-const corsOptions = {
-  origin: "*", // ALLOW ALL FOR DEBUGGING
-  optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+// CORS
+app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later.",
-});
-app.use(limiter);
+// Rate limiting
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
-// Strict Rate Limiting for Login
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, // INCREASED LIMIT TEMPORARILY FOR TESTING
-  message: {
-    errors: [{ msg: "Too many login attempts, please try again after 15 minutes." }]
-  },
+  max: 100,
+  message: { errors: [{ msg: "Too many login attempts, please try again after 15 minutes." }] },
 });
 
-app.use(express.json({ limit: "10kb" })); // Body parser with limit
+app.use(express.json({ limit: "10kb" }));
 
-// 📁 Using JSON file storage (backend/data/users.json)
-console.log("Using JSON file storage for user data");
+// ── Auth & Order routes ──────────────────────────────────────────────────────
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth",   require("./routes/auth"));
+app.use("/api/orders", require("./routes/orderRoutes"));
 
-// 🔒 STRICT CONTEXT MEMORY
-let lastContext = {
-  products: [],
-};
+// ── Context memory (per-session follow-ups) ──────────────────────────────────
+let lastContext = { products: [] };
 
-// 🛣️ ROUTES
-app.use("/api/auth/login", authLimiter); // Apply strict limit to login BEFORE mounting auth routes
-app.use("/api/auth", require("./routes/auth")); // Auth Routes
-app.use("/api/orders", require("./routes/orderRoutes")); // Order Routes
+// ── Helper: search products ───────────────────────────────────────────────────
+function searchProducts(tokens, fullText) {
+  const results = [];
+  const seen = new Set();
 
+  const add = (item) => {
+    if (!seen.has(item.id)) {
+      seen.add(item.id);
+      results.push(item);
+    }
+  };
+
+  // 1. Exact product name match (highest priority)
+  const exactMatches = [];
+  productKB.forEach((item) => {
+    const nameLower = item.title.toLowerCase();
+    if (fullText.includes(nameLower)) {
+      exactMatches.push(item);
+      seen.add(item.id);
+    }
+  });
+
+  if (exactMatches.length > 0) {
+    results.push(...exactMatches);
+    return results; // Return early to prevent partial/feature matching from adding unwanted items
+  }
+
+  // Only do partial token matching if no exact name was found
+  productKB.forEach((item) => {
+    const nameTokens = item.title.toLowerCase().split(/\s+/);
+    const hasSignificantMatch = tokens.some(t => 
+      t.length > 2 && nameTokens.some(nt => nt.includes(t))
+    );
+    if (hasSignificantMatch) add(item);
+  });
+
+  // 2. Category match (e.g. "show me earbuds", "best headphones")
+  const categoryMap = {
+    earbud: "earbuds", earbuds: "earbuds",
+    headphone: "headphones", headphones: "headphones",
+    speaker: "speakers", speakers: "speakers",
+    soundbar: "soundbars", soundbars: "soundbars",
+    smartwatch: "smartwatches", smartwatches: "smartwatches", watch: "smartwatches",
+    accessory: "accessories", accessories: "accessories",
+    charger: "accessories", cable: "accessories", powerbank: "accessories",
+  };
+  tokens.forEach((t) => {
+    if (categoryMap[t]) {
+      productKB
+        .filter((item) => item.category === categoryMap[t])
+        .forEach(add);
+    }
+  });
+
+  // 3. Feature / description keyword match
+  const importantFeatureWords = [
+    "anc", "noise", "cancellation", "wireless", "waterproof", "water",
+    "gaming", "bass", "rgb", "gps", "ecg", "amoled", "ldac", "dolby",
+    "atmos", "subwoofer", "karaoke", "kids", "sport", "studio", "outdoor",
+    "compact", "portable", "cinema", "fashion", "hiRes", "surround",
+    "charging", "fast", "multiroom", "voice", "assistant",
+  ];
+  tokens.forEach((t) => {
+    if (importantFeatureWords.includes(t) || t.length > 4) {
+      productKB
+        .filter(
+          (item) =>
+            item.content.toLowerCase().includes(t) ||
+            (item.description || "").toLowerCase().includes(t) ||
+            (item.features || []).some((f) => f.toLowerCase().includes(t))
+        )
+        .forEach(add);
+    }
+  });
+
+  // 4. Full-text phrase match in content
+  if (fullText.length > 10) {
+    productKB
+      .filter((item) => item.content.toLowerCase().includes(fullText))
+      .forEach(add);
+  }
+
+  // 5. Fuzzy match (fallback — Levenshtein)
+  if (results.length === 0) {
+    productKB.forEach((item) => {
+      const matched = tokens.some((word) => {
+        if (word.length < 4) return false; // Ignore short words for fuzzy match
+        const dist = levenshteinDistance(word, item.title.toLowerCase());
+        return dist <= (word.length > 5 ? 3 : 2);
+      });
+      if (matched) add(item);
+    });
+  }
+
+  return results;
+}
+
+// ── Helper: find best two products for comparison ───────────────────────────
+// Splits query on "and"/"vs"/"versus" and does a best-name-match per segment.
+function findComparisonProducts(fullText) {
+  // Split on common comparison separators
+  const parts = fullText
+    .split(/\b(?:and|vs\.?|versus|or)\b/i)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  // For each part, find the product whose name has the most overlapping words
+  const matched = parts.map((part) => {
+    const partWords = part.split(/\s+/).filter((w) => w.length > 2);
+    let best = null;
+    let bestScore = 0;
+    productKB.forEach((item) => {
+      const nameLower = item.title.toLowerCase();
+      const score = partWords.filter((w) => nameLower.includes(w)).length;
+      if (score > bestScore) { bestScore = score; best = item; }
+    });
+    return best;
+  });
+
+  // Return up to 2 unique, non-null products
+  const unique = [];
+  const seen = new Set();
+  matched.forEach((p) => {
+    if (p && !seen.has(p.id)) { seen.add(p.id); unique.push(p); }
+  });
+  return unique.slice(0, 2);
+}
+
+// ── Helper: search FAQs ───────────────────────────────────────────────────────
+function searchFAQs(tokens, fullText, intent) {
+  // Map intents directly to FAQ ids
+  const intentToFaq = {
+    shipping: "faq-shipping",
+    returns:  "faq-returns",
+    warranty: "faq-warranty",
+    payment:  "faq-payment",
+    categories: "faq-categories",
+    about:    "faq-about",
+    contact:  "faq-contact",
+  };
+
+  if (intentToFaq[intent]) {
+    const faq = faqKB.find((f) => f.id === intentToFaq[intent]);
+    return faq ? [faq] : [];
+  }
+
+  // Keyword-based FAQ search
+  return faqKB.filter((faq) =>
+    faq.keywords.some((kw) =>
+      tokens.includes(kw) || fullText.includes(kw)
+    )
+  );
+}
+
+// ── Chat endpoint ─────────────────────────────────────────────────────────────
 app.post("/api/chat", (req, res) => {
   const message = req.body.message;
 
   if (!message || typeof message !== "string") {
-    return res.status(400).json({ reply: "Invalid message format." });
+    return res.status(400).json({ reply: "Invalid message format.", products: [] });
   }
-
   if (message.length > 500) {
-    return res.status(400).json({ reply: "Message too long." });
+    return res.status(400).json({ reply: "Message too long.", products: [] });
   }
 
-  const keywords = normalizeQuery(message);
-  const intent = classifyIntent(keywords);
+  // Normalize
+  const { tokens, fullText } = normalizeQuery(message);
 
-  let results = [];
+  // Classify intent (pass both tokens and full text)
+  const intent = classifyIntent(tokens, fullText);
 
-  /* =====================================================
-     1️⃣ PRICE QUERIES — STRICT PRODUCT NAME MATCH ONLY
-     ===================================================== */
-  if (intent === "price") {
-    const matchedProducts = knowledgeBase.filter(
-      (item) =>
-        item.type === "product" &&
-        keywords.some((word) => item.title.toLowerCase().includes(word))
-    );
+  // Short-circuit for greeting — no search needed
+  if (intent === "greeting") {
+    const response = reasoningEngine("greeting", [], message);
+    return res.json({ reply: response.text, products: [] });
+  }
 
-    if (matchedProducts.length === 0) {
-      return res.json({
-        reply:
-          "I searched the website but couldn’t find pricing information for that product.",
-      });
-    }
+  // ── Search ────────────────────────────────────────────────────────────────
+  let productResults = [];
+  let faqResults     = [];
 
-    results = matchedProducts;
-  } else if (intent === "recommendation") {
-    // Extract budget
-    const budgetMatch = message.match(/\d+/); // Finds the first number
-    const budget = budgetMatch ? parseInt(budgetMatch[0]) : Infinity;
-
-    // Extract category
-    let category = null;
-    if (keywords.includes("headphone") || keywords.includes("headphones"))
-      category = "headphones";
-    else if (keywords.includes("earbud") || keywords.includes("earbuds"))
-      category = "earbuds";
-    else if (keywords.includes("speaker") || keywords.includes("speakers"))
-      category = "speakers";
-    else if (keywords.includes("watch") || keywords.includes("smartwatch"))
-      category = "smartwatches";
-    else if (keywords.includes("soundbar") || keywords.includes("soundbars"))
-      category = "soundbars";
-
-    // Filter products
-    results = knowledgeBase.filter((item) => {
-      const isProduct = item.type === "product";
-      const matchesCategory = category ? item.category === category : true;
-      const withinBudget = item.price <= budget;
-      return isProduct && matchesCategory && withinBudget;
-    });
-
-    // Sort by rating (popularity)
-    results.sort((a, b) => b.rating - a.rating);
-
-    // If no results found with specific criteria, relax budget
-    if (results.length === 0 && budget !== Infinity) {
-      results = knowledgeBase.filter((item) => {
-        return (
-          item.type === "product" &&
-          (category ? item.category === category : true)
-        );
-      });
-      results.sort((a, b) => a.price - b.price); // Show cheapest first if budget constraint failed
-    }
-  } else if (
-    /* =====================================================
-     3️⃣ BROWSE / LIST QUERIES (show / list headphones)
-     ===================================================== */
-    intent === "general" &&
-    (keywords.includes("headphones") ||
-      keywords.includes("products") ||
-      keywords.includes("items"))
-  ) {
-    results = knowledgeBase.filter(
-      (item) =>
-        item.type === "product" &&
-        item.content.toLowerCase().includes("headphone")
-    );
+  // FAQ-only intents
+  const faqOnlyIntents = ["shipping", "returns", "payment", "about", "categories", "contact"];
+  if (faqOnlyIntents.includes(intent)) {
+    faqResults = searchFAQs(tokens, fullText, intent);
+  } else if (intent === "warranty") {
+    // Warranty: check if user asked about a specific product
+    productResults = searchProducts(tokens, fullText);
+    faqResults     = searchFAQs(tokens, fullText, intent);
   } else {
-    /* =====================================================
-     4️⃣ COMPARISON / NORMAL SEARCH (WITH FUZZY MATCH)
-     ===================================================== */
-    // 1. Exact/Partial Match
-    results = knowledgeBase.filter((item) =>
-      keywords.some(
-        (word) =>
-          item.title?.toLowerCase().includes(word) ||
-          item.content.toLowerCase().includes(word)
-      )
-    );
+    // Product-related intents (price, recommendation, comparison, features, specs, general)
 
-    // 2. Fuzzy Match (if no exact matches)
-    if (results.length === 0) {
-      results = knowledgeBase.filter((item) =>
-        keywords.some((word) => {
-          const distance = levenshteinDistance(word, item.title.toLowerCase());
-          // Allow simplified threshold: 3 for longer words, 2 for shorter
-          const threshold = word.length > 5 ? 3 : 2;
-          // Also check against fuzzy version of product name parts?
-          // Simplest: check if any word in query is close to product name
-          return distance <= threshold;
-        })
+    // Comparison: use dedicated two-product extractor
+    if (intent === "comparison") {
+      productResults = findComparisonProducts(fullText);
+      // Fallback to broad search if we can't find 2 named products
+      if (productResults.length < 2) {
+        productResults = searchProducts(tokens, fullText).slice(0, 2);
+      }
+    } else {
+      productResults = searchProducts(tokens, fullText);
+    }
+
+    // Budget filter for recommendations
+    if (intent === "recommendation") {
+      const budgetMatch = message.match(/\d+/g);
+      // Use the largest number as budget (e.g. "under 5000")
+      const budget = budgetMatch
+        ? Math.max(...budgetMatch.map(Number))
+        : Infinity;
+
+      if (budget < Infinity) {
+        const filtered = productResults.filter((p) => p.price <= budget);
+        // Only apply filter if it gives results; otherwise keep all
+        if (filtered.length > 0) productResults = filtered;
+      }
+
+      // Sort by rating descending
+      productResults.sort((a, b) => b.rating - a.rating);
+    }
+    // end else (non-comparison)
+
+    // Context memory fallback for follow-up questions
+    if (
+      productResults.length === 0 &&
+      lastContext.products.length > 0 &&
+      ["warranty", "features", "specs", "price"].includes(intent)
+    ) {
+      productResults = productKB.filter((item) =>
+        lastContext.products.includes(item.title)
       );
     }
+
+    // Also fetch relevant FAQs (e.g. warranty FAQ for warranty intent)
+    faqResults = searchFAQs(tokens, fullText, intent);
   }
 
-  /* =====================================================
-     4️⃣ CONTEXT MEMORY (ONLY FOR FOLLOW-UPS)
-     ===================================================== */
-  if (
-    results.length === 0 &&
-    lastContext.products.length > 0 &&
-    (intent === "warranty" || intent === "shipping")
-  ) {
-    results = knowledgeBase.filter((item) =>
-      lastContext.products.includes(item.title)
-    );
-  }
+  // Combine results (products first, then FAQs)
+  const allResults = [...productResults, ...faqResults];
 
-  /* =====================================================
-     5️⃣ SAVE CONTEXT (ONLY REAL PRODUCTS)
-     ===================================================== */
-  lastContext.products = results
-    .filter((r) => r.type === "product")
-    .map((p) => p.title);
+  // Update context memory (only real products)
+  lastContext.products = productResults.slice(0, 4).map((p) => p.title);
 
-  /* =====================================================
-     6️⃣ GENERATE FINAL ANSWER
-     ===================================================== */
-  const response = reasoningEngine(intent, results);
+  // ── Generate reply ────────────────────────────────────────────────────────
+  const response = reasoningEngine(intent, allResults, message);
 
-  // Ensure response is always an object with { reply, products }
   const replyData =
     typeof response === "string"
       ? { reply: response, products: [] }
@@ -211,7 +302,26 @@ app.post("/api/chat", (req, res) => {
   res.json(replyData);
 });
 
+// ── Start server ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Chatbot backend running on port ${PORT}`);
-});
+
+async function startServer() {
+  try {
+    await connectDB();
+    // Sync models without dropping tables in production, but here we can sync
+    await sequelize.sync();
+    
+    const knowledgeBase = await buildKnowledgeBase();
+    productKB = knowledgeBase.filter((k) => k.type === "product");
+    faqKB     = knowledgeBase.filter((k) => k.type === "faq");
+
+    app.listen(PORT, () => {
+      console.log(`✅ SonicHub chatbot backend running on port ${PORT}`);
+      console.log(`📦 Knowledge base loaded from SQLite: ${productKB.length} products, ${faqKB.length} FAQs`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+  }
+}
+
+startServer();

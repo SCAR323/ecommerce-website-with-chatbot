@@ -1,10 +1,9 @@
 function normalizeQuery(text) {
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s]/g, "")
-      .split(" ")
-      .filter(word => word.length > 2);
-  }
-  
-  module.exports = normalizeQuery;
-  
+  const fullText = text.toLowerCase().replace(/[^\w\s]/g, "");
+  const tokens = fullText
+    .split(/\s+/)
+    .filter((word) => word.length >= 1); // keep words >= 1 char ("vs", "a", etc.)
+  return { tokens, fullText };
+}
+
+module.exports = normalizeQuery;

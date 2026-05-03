@@ -40,11 +40,11 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image Gallery */}
         <div>
-          <div className="aspect-square rounded-2xl overflow-hidden bg-muted/50 mb-4">
+          <div className="rounded-2xl overflow-hidden bg-muted/50 mb-4 flex items-center justify-center" style={{ maxHeight: "70vh" }}>
             <img
               src={product.images[0]}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain max-h-[70vh]"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
